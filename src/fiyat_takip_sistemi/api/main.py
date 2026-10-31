@@ -727,3 +727,53 @@ def post_demo_reset(db: Session = Depends(get_db)):
     from ..scripts.demo_reset import reset_demo_environment
     reset_demo_environment()
     return RedirectResponse(url="/?bildirim=demo_sifirlandi", status_code=303)
+
+
+@app.get("/health", tags=["Sistem"])
+def health_check():
+    """UptimeRobot / Cron-job.org 7/24 uyanık tutma (keep-alive) uç noktası."""
+    return {"status": "ok", "service": "cephane-fiyat-takip"}
+
+
+@app.on_event("startup")
+def on_startup_ensure_demo_data():
+    """
+    Bulut sunucusu (Render) ilk kez ayağa kalktığında veya yeniden başladığında
+    veritabanı boşsa otomatik olarak 12 Cep-Hane ürününü, pazaryeri satıcılarını
+    ve 14 günlük geçmişi hazırlar; ayrıca RENDER_EXTERNAL_URL varsa 10 dakikada bir
+    otomatik keep-alive ping döngüsünü başlatır.
+    """
+    import os
+    import threading
+    import time
+    import httpx
+    from ..core.db import SessionLocal, init_db
+    from ..core.models import Product
+
+    init_db()
+    db = SessionLocal()
+    try:
+        count = db.query(Product).count()
+    except Exception:
+        count = 0
+    finally:
+        db.close()
+
+    if count == 0:
+        print("🚀 [STARTUP] Veritabanı boş, Cep-Hane Teknoloji demo verileri otomatik yükleniyor...")
+        from ..scripts.demo_reset import reset_demo_environment
+        reset_demo_environment()
+
+    ext_url = os.getenv("RENDER_EXTERNAL_URL", "").strip()
+    if ext_url:
+        def _keep_alive_worker(url: str):
+            ping_target = url.rstrip("/") + "/health"
+            while True:
+                time.sleep(600)  # 10 dakika
+                try:
+                    httpx.get(ping_target, timeout=15.0)
+                except Exception:
+                    pass
+
+        t = threading.Thread(target=_keep_alive_worker, args=(ext_url,), daemon=True)
+        t.start()
