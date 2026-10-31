@@ -1,17 +1,17 @@
 import json
 from pathlib import Path
+from typing import Any, Dict, List
+
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-import uvicorn
 
-app = FastAPI(title="Fake Bookstore - Rakip C")
+app = FastAPI(title="N11 / Pazarama Elektronik Pazaryeri Simülasyonu (Port 8001)")
 
-# data/prices.json yolunu dinamik bul
+
 def get_prices_file() -> Path:
     candidates = [
         Path("data/prices.json"),
         Path(__file__).resolve().parent.parent / "data" / "prices.json",
-        Path(__file__).resolve().parent / "data" / "prices.json",
     ]
     for p in candidates:
         if p.exists():
@@ -19,84 +19,71 @@ def get_prices_file() -> Path:
     return Path("data/prices.json")
 
 
-def load_products():
-    path = get_prices_file()
-    if not path.exists():
+def load_products() -> List[Dict[str, Any]]:
+    prices_file = get_prices_file()
+    if not prices_file.exists():
         return []
-    with open(path, "r", encoding="utf-8") as f:
+    with open(prices_file, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/products", response_class=HTMLResponse)
-def get_products_page():
+def list_products() -> str:
     products = load_products()
-
     cards_html = ""
-    for p in products:
-        stock_text = "Stokta Var" if p.get("in_stock", True) else "Tükendi"
-        stock_badge = "bg-green" if p.get("in_stock", True) else "bg-red"
+    for prod in products:
+        pid = prod.get("id", 0)
+        name = prod.get("name", "Bilinmeyen Ürün")
+        price = prod.get("price", 0.0)
+        in_stock = prod.get("in_stock", True)
+        url = prod.get("url", f"http://localhost:8001/products/{pid}")
+
+        stock_badge = (
+            '<span class="product-stock in-stock" data-in-stock="true">Stokta Var</span>'
+            if in_stock
+            else '<span class="product-stock out-of-stock" data-in-stock="false">Tükendi</span>'
+        )
         cards_html += f"""
-        <article class="product-card">
-            <h3 class="product-title">{p.get('name')}</h3>
-            <p class="product-price">{p.get('price'):.2f} TL</p>
-            <span class="product-stock {stock_badge}">{stock_text}</span>
-            <div class="product-actions">
-                <a href="{p.get('url', '#')}" class="product-link">Ürünü İncele</a>
-            </div>
-        </article>
+        <div class="product-card" data-id="{pid}">
+            <h3 class="product-name">{name}</h3>
+            <p class="product-price" data-price="{price:.2f}">{price:,.2f} TL</p>
+            {stock_badge}
+            <a class="product-link" href="{url}">Pazaryeri İlanını İncele</a>
+        </div>
         """
 
-    html_content = f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitap Dünyası - Rakip C Mağazası</title>
+    <title>Pazaryeri Elektronik Vitrini — Canlı Fiyat Simülasyonu</title>
     <style>
-        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }}
-        body {{ background: #f8fafc; color: #1e293b; padding: 2rem; }}
-        header {{ max-width: 1200px; margin: 0 auto 2rem auto; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; }}
-        h1 {{ font-size: 1.75rem; color: #0f172a; }}
-        .badge {{ background: #e0e7ff; color: #3730a3; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }}
-        .product-card {{ background: #ffffff; border-radius: 0.75rem; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.15s ease; }}
-        .product-card:hover {{ transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }}
-        .product-title {{ font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem; line-height: 1.4; min-height: 2.8rem; }}
-        .product-price {{ font-size: 1.35rem; font-weight: 700; color: #059669; margin-bottom: 0.5rem; }}
-        .product-stock {{ display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 0.375rem; width: fit-content; margin-bottom: 1rem; }}
-        .bg-green {{ background: #d1fae5; color: #065f46; }}
-        .bg-red {{ background: #fee2e2; color: #991b1b; }}
-        .product-link {{ display: block; text-align: center; background: #2563eb; color: #ffffff; text-decoration: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; }}
-        .product-link:hover {{ background: #1d4ed8; }}
+        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 30px; color: #1e293b; }}
+        .header {{ max-width: 1180px; margin: 0 auto 24px auto; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 14px; }}
+        .header h1 {{ margin: 0; font-size: 26px; color: #0f172a; }}
+        .header p {{ margin: 4px 0 0 0; color: #64748b; font-size: 14px; }}
+        .badge-count {{ background: #e0e7ff; color: #3730a3; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 14px; }}
+        .grid {{ max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 18px; }}
+        .product-card {{ background: #ffffff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; }}
+        .product-name {{ font-size: 15px; margin: 0 0 12px 0; color: #1e293b; line-height: 1.4; min-height: 42px; }}
+        .product-price {{ font-size: 22px; font-weight: 700; color: #059669; margin: 0 0 10px 0; }}
+        .product-stock {{ display: inline-block; width: fit-content; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 14px; }}
+        .in-stock {{ background: #dcfce7; color: #166534; }}
+        .out-of-stock {{ background: #fee2e2; color: #991b1b; }}
+        .product-link {{ display: block; text-align: center; background: #2563eb; color: #fff; text-decoration: none; padding: 9px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; }}
     </style>
 </head>
 <body>
-    <header>
+    <div class="header">
         <div>
-            <h1>Kitap Dünyası</h1>
-            <p style="color: #64748b; font-size: 0.875rem;">Rakip C Simülasyon Mağazası (Port 8001)</p>
+            <h1>📱 Pazaryeri Elektronik & Cep Telefonu Vitrini</h1>
+            <p>N11 / Pazarama Canlı Rakip Fiyat Simülasyon Mağazası (Port 8001)</p>
         </div>
-        <span class="badge">{len(products)} Ürün Listeleniyor</span>
-    </header>
-    <main class="grid">
+        <span class="badge-count">{len(products)} Elektronik Ürün</span>
+    </div>
+    <div class="grid">
         {cards_html}
-    </main>
+    </div>
 </body>
-</html>
-"""
-    return HTMLResponse(content=html_content)
-
-
-@app.get("/products/{product_id}")
-def get_product_detail(product_id: int):
-    products = load_products()
-    for p in products:
-        if p.get("id") == product_id:
-            return p
-    return {"error": "Ürün bulunamadı"}
-
-
-if __name__ == "__main__":
-    print("🚀 Rakip C Sahte Mağazası http://localhost:8001 adresinde başlatılıyor...")
-    uvicorn.run("fake_store.main:app", host="127.0.0.1", port=8001, reload=True)
+</html>"""

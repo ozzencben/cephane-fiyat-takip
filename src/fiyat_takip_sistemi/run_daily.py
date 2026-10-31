@@ -101,9 +101,9 @@ def build_comparison_dataframe(db: Session) -> pd.DataFrame:
     competitors = {c.id: c.ad for c in db.query(Competitor).all()}
 
     # Rakip ID'lerini belirle
-    rakip_a_id = next((cid for cid, name in competitors.items() if "BooksToScrape" in name or "Rakip A" in name), 1)
-    rakip_b_id = next((cid for cid, name in competitors.items() if "WebScraper" in name or "Rakip B" in name), 3)
-    rakip_c_id = next((cid for cid, name in competitors.items() if "Sahte Magaza" in name or "Rakip C" in name), 2)
+    rakip_a_id = next((cid for cid, name in competitors.items() if "BooksToScrape" in name or "Rakip A" in name or "PttAVM" in name or "PttAVM" in name or "PttAVM" in name), 1)
+    rakip_b_id = next((cid for cid, name in competitors.items() if "WebScraper" in name or "Rakip B" in name or "Hepsiburada" in name or "Hepsiburada" in name or "Hepsiburada" in name), 3)
+    rakip_c_id = next((cid for cid, name in competitors.items() if "Sahte Magaza" in name or "Rakip C" in name or "N11" in name or "Pazarama" in name or "N11" in name or "Pazarama" in name or "N11" in name or "Pazarama" in name), 2)
 
     rows: List[Dict[str, Any]] = []
 
@@ -166,9 +166,9 @@ def build_comparison_dataframe(db: Session) -> pd.DataFrame:
         rows.append({
             "Ürün": product.urun_adi,
             "Benim fiyatım": f"{benim_fiyat:.2f} TL",
-            "Rakip A": f"{fiyat_rakip_a:.2f} TL" if fiyat_rakip_a is not None else "-",
-            "Rakip B": f"{fiyat_rakip_b:.2f} TL" if fiyat_rakip_b is not None else "-",
-            "Rakip C": f"{fiyat_rakip_c:.2f} TL" if fiyat_rakip_c is not None else "-",
+            "PttAVM": f"{fiyat_rakip_a:.2f} TL" if fiyat_rakip_a is not None else "-",
+            "Hepsiburada": f"{fiyat_rakip_b:.2f} TL" if fiyat_rakip_b is not None else "-",
+            "N11/Pazarama": f"{fiyat_rakip_c:.2f} TL" if fiyat_rakip_c is not None else "-",
             "Fark": fark_str,
             "Uyarı": uyari,
         })

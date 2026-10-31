@@ -29,11 +29,11 @@ def _get_competitor_role_map(db: Session) -> Dict[int, str]:
     role_map: Dict[int, str] = {}
     for comp in db.query(Competitor).all():
         ad_lower = comp.ad.lower()
-        if "rakip a" in ad_lower or "bookstoscrape" in ad_lower:
+        if "rakip a" in ad_lower or "bookstoscrape" in ad_lower or "pttavm" in ad_lower:
             role_map[comp.id] = "rakip_a"
-        elif "rakip b" in ad_lower or "webscraper" in ad_lower:
+        elif "rakip b" in ad_lower or "webscraper" in ad_lower or "hepsiburada" in ad_lower:
             role_map[comp.id] = "rakip_b"
-        elif "rakip c" in ad_lower or "sahte magaza" in ad_lower:
+        elif "rakip c" in ad_lower or "sahte magaza" in ad_lower or "n11" in ad_lower or "pazarama" in ad_lower:
             role_map[comp.id] = "rakip_c"
     return role_map
 
