@@ -24,9 +24,8 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:latest").strip()
 
 GEMINI_MODELS = [
-    "gemini-flash-latest",
     "gemini-3.1-flash-lite",
-    "gemini-3.8-flash",
+    "gemini-flash-latest",
 ]
 
 
@@ -149,7 +148,7 @@ def _call_gemini(data: Dict[str, Any], system_prompt: str, user_content: str, ke
     for model_name in GEMINI_MODELS:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
         try:
-            resp = httpx.post(url, json=payload, timeout=20.0)
+            resp = httpx.post(url, json=payload, timeout=7.0)
             if resp.status_code == 200:
                 result_json = resp.json()
                 candidates = result_json.get("candidates", [])
@@ -203,7 +202,7 @@ def _call_groq(data: Dict[str, Any], system_prompt: str, user_content: str, key:
         "max_tokens": 650,
     }
     try:
-        resp = httpx.post(url, json=payload, headers=headers, timeout=15.0)
+        resp = httpx.post(url, json=payload, headers=headers, timeout=6.0)
         if resp.status_code == 200:
             return resp.json()["choices"][0]["message"]["content"].strip()
         print(f"⚠️ Groq HTTP {resp.status_code} döndü.")
