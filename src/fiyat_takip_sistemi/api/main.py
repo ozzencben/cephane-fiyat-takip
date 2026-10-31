@@ -747,11 +747,10 @@ def on_startup_ensure_demo_data():
     import threading
     import time
     import httpx
-    from ..core.db import SessionLocal
-    from ..core.init_db import init_db
+    from ..core.db import Base, SessionLocal, engine
     from ..core.models import Product
 
-    init_db()
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         count = db.query(Product).count()
