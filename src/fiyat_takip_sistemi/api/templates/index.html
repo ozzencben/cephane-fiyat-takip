@@ -189,6 +189,84 @@
             border: 1px solid var(--green-border);
         }
 
+        /* Simülasyon Açıklama Kutusu */
+        .simulation-explainer-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0.6rem;
+            padding: 0.9rem 1.15rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .sim-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+        .sim-badge {
+            background: #fef3c7;
+            color: #b45309;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            border: 1px solid #fcd34d;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .sim-tag {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #b45309;
+            background: #ffffff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.35rem;
+            border: 1px solid #fde68a;
+        }
+        .sim-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.85rem;
+        }
+        @media (max-width: 900px) {
+            .sim-grid { grid-template-columns: 1fr; }
+        }
+        .sim-col {
+            background: #ffffff;
+            border: 1px solid #fef08a;
+            border-radius: 0.45rem;
+            padding: 0.7rem 0.85rem;
+        }
+        .sim-col-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #78350f;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .sim-col p {
+            font-size: 0.775rem;
+            line-height: 1.45;
+            color: #451a03;
+            margin: 0;
+        }
+        .sim-col p strong {
+            color: #0f172a;
+        }
+
         /* 1. Üstte 4 Özet Kutusu */
         .summary-grid {
             display: grid;
@@ -863,6 +941,31 @@
         </div>
 
         <div id="toastBanner" class="toast-banner"></div>
+
+        <!-- Simülasyon Açıklama Kutusu: Neyi Test Eder? -->
+        <section class="simulation-explainer-card">
+            <div class="sim-header">
+                <div class="sim-title">
+                    <span class="sim-badge">⚡ Canlı Test Kılavuzu</span>
+                    <strong>'⚡ Rakip İndirimi Simüle Et' Butonu Nedir &amp; Neyi Test Eder?</strong>
+                </div>
+                <div class="sim-tag">📱 Test Modeli: Apple iPhone 15 128 GB</div>
+            </div>
+            <div class="sim-grid">
+                <div class="sim-col">
+                    <div class="sim-col-label">🎯 1. Canlandırılan Kriz Senaryosu</div>
+                    <p>Pazaryeri rakibimiz <strong>N11 / TeknoMerkez</strong>, amiral gemimiz iPhone 15'te aniden fiyatını <strong>58.750 TL'den 57.490 TL'ye (-1.260 TL)</strong> düşürür ve pazaryerinde 1. sıraya oturur.</p>
+                </div>
+                <div class="sim-col">
+                    <div class="sim-col-label">🛡️ 2. Sistemin Akıllı Kararı (Dip Sınır Zırhı)</div>
+                    <p>Akılsız botlar gibi fiyat kırıp Cep-Hane'yi zarara sokmak yerine; sistemimiz <strong>58.000 TL Havale Dip Sınırınızı</strong> korur. İndirimi reddeder, <strong>⚠️ DİP SINIR ALTI RİSK</strong> uyarısı verir ve Telegram'dan anlık kriz alarmı atar.</p>
+                </div>
+                <div class="sim-col">
+                    <div class="sim-col-label">🔄 3. Nasıl Test Edilir &amp; Geri Alınır?</div>
+                    <p>Üstteki turuncu butona tıklayarak canlı test akışını ve Telegram uyarısını görebilir; inceleme bitince <strong>'Demoyu Sıfırla'</strong> butonuyla sistemi saniyeler içinde ilk orijinal haline döndürebilirsiniz.</p>
+                </div>
+            </div>
+        </section>
 
         <!-- 1. Üstte 4 Özet Kutusu -->
         <section class="summary-grid">
