@@ -10,7 +10,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from .db import SessionLocal
 from .models import Competitor, Match, PriceSnapshot, Product
-from .seller_profiles import get_seller_profile
+from .seller_profiles import get_electronics_undercut_step, get_seller_profile
 
 
 class Severity(str, Enum):
@@ -93,7 +93,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
         comp_display = seller_info['etiket']
 
         # Havale / Toptan Dip Fiyat Sınırı: maliyet × (1 + min_marj)
-        min_allowed_price = round(product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2)
+        min_allowed_price = float(round(product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 0))
 
         # ---------------------------------------------------------------------
         # 1. KURAL: STOK_BITTI (Fırsat Uyarısı)
@@ -152,8 +152,9 @@ def evaluate_rules(db: Session) -> List[Alert]:
             diff_tl = product.fiyat - latest_snap.fiyat
             diff_pct = (diff_tl / product.fiyat) * 100.0
 
+            step_tl = get_electronics_undercut_step(latest_snap.fiyat)
             if latest_snap.fiyat <= min_allowed_price:
-                suggested_price = round(latest_snap.fiyat * 0.99, 2)
+                suggested_price = float(round(latest_snap.fiyat - step_tl, 0))
                 severity = Severity.YUKSEK
                 rec_text = (
                     f"Marjı bozmadan rekabet edemezsin. "
@@ -161,7 +162,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                     f"Maliyet: {product.maliyet:.2f} TL, Min Marj: %{product.min_marj_yuzde:.0f})"
                 )
             else:
-                raw_candidate = round(latest_snap.fiyat * 0.99, 2)
+                raw_candidate = float(round(latest_snap.fiyat - step_tl, 0))
                 if raw_candidate >= min_allowed_price:
                     suggested_price = raw_candidate
                 else:
@@ -171,7 +172,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                 calculated_margin = ((suggested_price - product.maliyet) / product.maliyet) * 100.0
                 rec_text = (
                     f"Önerilen Fiyat: {suggested_price:.2f} TL "
-                    f"(Havale dip sınırınız {min_allowed_price:.2f} TL ve %{calculated_margin:.1f} marj korunarak 1. sıraya geçilir)."
+                    f"(Rakibin {step_tl:.0f} TL altı; Havale dip sınırınız {min_allowed_price:.2f} TL ve %{calculated_margin:.1f} marj korunarak 1. sıraya geçilir)."
                 )
 
             alerts.append(
@@ -206,7 +207,8 @@ def evaluate_rules(db: Session) -> List[Alert]:
             gap_tl = cheapest_snap.fiyat - product.fiyat
             gap_pct = (gap_tl / product.fiyat) * 100.0
             if gap_pct >= 1.0:
-                target_price = round(cheapest_snap.fiyat * 0.995, 2)
+                step_tl = get_electronics_undercut_step(cheapest_snap.fiyat)
+                target_price = float(round(cheapest_snap.fiyat - step_tl, 0))
                 if target_price > product.fiyat:
                     extra_profit = round(target_price - product.fiyat, 2)
                     alerts.append(

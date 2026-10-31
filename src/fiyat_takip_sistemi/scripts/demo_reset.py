@@ -117,7 +117,7 @@ def reset_demo_state() -> None:
             "Buna karşın 'Samsung Galaxy A17' ve 'Samsung Watch 8 44mm' ürünlerinde rakipler toptan/havale dip sınırımızın yakınına indiğinden "
             "kârlılığı bozmamak adına ek fiyat kırılmaması önerilir.\n\n"
             "Satın Alma ve Fiyatlandırma Aksiyon Önerileri:\n"
-            "1. 'Apple iPhone 15 128 GB Siyah' (Önerilen: 58.162,50 TL | Havale Dip Sınırı: 58.000 TL) ve 'POCO X8 Pro 256 GB' (Önerilen: 33.610,50 TL | Dip Sınır: 33.500 TL) ürünlerinde fiyatları güncelleyerek Akakçe/pazaryeri sıralamasında 1. sırayı geri alın.\n"
+            "1. 'Apple iPhone 15 128 GB Siyah' (Önerilen: 58.650,00 TL | Havale Dip Sınırı: 58.000 TL) ve 'POCO X8 Pro 256 GB' (Önerilen: 33.850,00 TL | Dip Sınır: 33.500 TL) ürünlerinde fiyatları güncelleyerek Akakçe/pazaryeri sıralamasında 1. sırayı geri alın.\n"
             "2. En ucuz satıcı olduğumuz 'Samsung Galaxy A26 256 GB' (Bizim: 22.900 TL, En Yakın Rakip: 23.390 TL) ve 'Apple iPad Mini 7 512 GB' ürünlerinde 1. sırayı kaybetmeden fiyat artışı yaparak ürün başına +350 TL ile +700 TL ek marj kazanın."
         )
         save_last_report(baseline_llm_report, report_data)

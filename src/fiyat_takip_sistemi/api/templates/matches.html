@@ -221,9 +221,82 @@
             color: var(--text-muted);
             font-size: 0.9375rem;
         }
+
+        .enterprise-topbar {
+            background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            margin: -1.75rem -1.25rem 1.5rem -1.25rem;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .enterprise-topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+        .topbar-brand-pill {
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 0.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+        }
+        .dot-live {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
     </style>
 </head>
 <body>
+    <div class="enterprise-topbar">
+        <div class="enterprise-topbar-inner">
+            <div class="topbar-left">
+                <span class="topbar-brand-pill">ÖZEL DEMO ORTAMI</span>
+                <span><strong>Cep-Hane Teknoloji</strong> (cephaneteknoloji.com) için özelleştirilmiş Satın Alma &amp; Rekabet Karar Destek Sistemi</span>
+            </div>
+            <div class="topbar-right">
+                <span class="status-pill"><span class="dot-live"></span> Canlı Pazaryeri Motoru Aktif</span>
+                <span class="status-pill">📦 Katalog Tespiti: 210 Ürün (Demoda 12 Seçili Model)</span>
+                <span class="status-pill">📲 Telegram: @Cep-haneFiyatTakipBot</span>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <a href="/" class="back-link">← Cep-Hane Rekabet Tablosuna Dön</a>
 
@@ -257,14 +330,14 @@
                         <tr id="match-row-{{ m.match_id }}">
                             <td>
                                 <span class="product-title">{{ m.urun_adi }}</span>
-                                <span class="product-meta">SKU: {{ m.sku }} | Bizim Fiyatımız: {{ "%.2f"|format(m.benim_fiyatim) }} TL</span>
+                                <span class="product-meta">SKU: {{ m.sku }} | Bizim Fiyatımız: {{ m.benim_fiyatim|tr_fiyat }} TL</span>
                             </td>
                             <td>
                                 <span class="product-title">{{ m.ham_urun_adi }}</span>
                                 <span class="product-meta">
                                     {{ m.rakip_adi }}
                                     {% if m.rakip_fiyat is not none %}
-                                        | Rakip Fiyatı: <strong>{{ "%.2f"|format(m.rakip_fiyat) }} TL</strong>
+                                        | Rakip Fiyatı: <strong>{{ m.rakip_fiyat|tr_fiyat }} TL</strong>
                                     {% endif %}
                                 </span>
                             </td>
@@ -324,7 +397,7 @@
                                 <span class="product-meta">
                                     {{ m.rakip_adi }}
                                     {% if m.rakip_fiyat is not none %}
-                                        | {{ "%.2f"|format(m.rakip_fiyat) }} TL
+                                        | {{ m.rakip_fiyat|tr_fiyat }} TL
                                     {% endif %}
                                 </span>
                             </td>

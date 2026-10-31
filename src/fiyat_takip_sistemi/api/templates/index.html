@@ -878,8 +878,8 @@
             </div>
             <div class="summary-card card-success">
                 <div class="summary-label">En Ucuz Biziz (Marj Fırsatı)</div>
-                <div class="summary-value text-green">{{ firsat_sayisi }}</div>
-                <div class="summary-sub">1. sırayı kaybetmeden fiyat artırma fırsatı</div>
+                <div class="summary-value text-green">{{ firsat_sayisi }} <span style="font-size:0.95rem;font-weight:700;">(+{{ toplam_birim_ek_kar|tr_fiyat }} TL/adet)</span></div>
+                <div class="summary-sub" style="color:#15803d;font-weight:600;">💰 10'ar satışta +{{ toplam_10lu_ek_kar|tr_fiyat }} TL ek net kâr potansiyeli</div>
             </div>
             <div class="summary-card">
                 <div class="summary-label">Son Otomatik Tarama</div>
@@ -955,7 +955,7 @@
                         >
                             <td>
                                 <a href="/urun/{{ u.id }}" class="product-name">{{ u.urun_adi }}</a>
-                                <span class="product-sku">SKU: {{ u.sku }} · Grafiği ve Satıcıları Gör →</span>
+                                <span class="product-sku">SKU: {{ u.sku }} · {{ u.kategori_rozeti }} · <span style="color:#2563eb;font-weight:600;">Detay &amp; Grafik →</span></span>
                             </td>
                             <td class="price-cell my-price">
                                 {{ u.benim_fiyatim|tr_fiyat }} TL

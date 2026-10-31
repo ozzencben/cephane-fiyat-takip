@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from ..core.db import get_db
 from ..core.models import Competitor, Match, PriceSnapshot, Product
 from ..core.report import get_latest_report_text
-from ..core.seller_profiles import get_seller_profile
+from ..core.seller_profiles import get_electronics_undercut_step, get_product_category_badge, get_seller_profile
 from ..scripts.seed_history import seed_price_history
 
 app = FastAPI(
@@ -81,9 +81,9 @@ def _build_product_comparison_item(
     }
     competitor_details: List[Dict[str, Any]] = []
 
-    min_allowed_price = round(
-        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2
-    )
+    min_allowed_price = float(round(
+        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 0
+    ))
 
     for match in matches:
         latest_snap = (
@@ -148,29 +148,30 @@ def _build_product_comparison_item(
         fark = round(min_comp_price - product.fiyat, 2)
         fark_yuzde = round((fark / product.fiyat) * 100.0, 1) if product.fiyat > 0 else 0.0
 
+        step_tl = get_electronics_undercut_step(min_comp_price)
         if min_comp_price < product.fiyat:
             durum = "RAKİP UCUZ"
             if min_comp_price <= min_allowed_price:
                 dip_alti = True
-                candidate_price = round(min_comp_price * 0.99, 2)
+                candidate_price = float(round(min_comp_price - step_tl, 0))
                 onerilen_fiyat = candidate_price
                 oneri_notu = (
                     f"⛔ Marjı bozmadan rekabet edilemez "
                     f"(Rakip: {format_tr_price(min_comp_price)} TL ≤ Havale Dip: {format_tr_price(min_allowed_price)} TL)"
                 )
             else:
-                raw_cand = round(min_comp_price * 0.99, 2)
+                raw_cand = float(round(min_comp_price - step_tl, 0))
                 candidate_price = raw_cand if raw_cand >= min_allowed_price else min_allowed_price
                 onerilen_fiyat = candidate_price
                 safe_margin = ((candidate_price - product.maliyet) / product.maliyet) * 100.0
                 yeni_marj_yuzde = round(safe_margin, 1)
                 oneri_notu = (
                     f"🎯 Önerilen: {format_tr_price(candidate_price)} TL "
-                    f"(Havale dip korunur, %{safe_margin:.1f} marj ile 1. sıra alınır)"
+                    f"(Rakibin {step_tl:.0f} TL altı · Havale dip korunur, %{safe_margin:.1f} marj ile 1. sıra alınır)"
                 )
         elif min_comp_price > product.fiyat:
             durum = "BİZ UCUZUZ"
-            target_fiyat = round(min_comp_price * 0.995, 2)
+            target_fiyat = float(round(min_comp_price - step_tl, 0))
             if target_fiyat > product.fiyat:
                 ek_kar = round(target_fiyat - product.fiyat, 2)
                 onerilen_fiyat = target_fiyat
@@ -178,7 +179,7 @@ def _build_product_comparison_item(
                 yeni_marj_yuzde = round(safe_margin, 1)
                 oneri_notu = (
                     f"💡 FIRSAT: 1. sırayı kaybetmeden {format_tr_price(target_fiyat)} TL'ye çekilebilir "
-                    f"(+{format_tr_price(ek_kar)} TL ek kâr)"
+                    f"(+{format_tr_price(ek_kar)} TL / adet ek kâr)"
                 )
             else:
                 oneri_notu = "Fiyat avantajı bizde; mevcut liste fiyatı korunabilir."
@@ -190,6 +191,7 @@ def _build_product_comparison_item(
         "id": product.id,
         "sku": product.sku,
         "urun_adi": product.urun_adi,
+        "kategori_rozeti": get_product_category_badge(product.sku, product.urun_adi),
         "benim_fiyatim": product.fiyat,
         "maliyet": product.maliyet,
         "min_marj_yuzde": product.min_marj_yuzde,
@@ -219,6 +221,11 @@ def get_dashboard_home(request: Request, db: Session = Depends(get_db)) -> HTMLR
     urunler_data = get_urunler(db=db)
     dip_alti_sayisi = sum(1 for u in urunler_data if u.get("dip_alti"))
     firsat_sayisi = sum(1 for u in urunler_data if u.get("durum") == "BİZ UCUZUZ")
+    toplam_birim_ek_kar = sum(
+        round((u.get("onerilen_fiyat") or u["benim_fiyatim"]) - u["benim_fiyatim"], 2)
+        for u in urunler_data
+        if u.get("durum") == "BİZ UCUZUZ" and (u.get("onerilen_fiyat") or 0) > u["benim_fiyatim"]
+    )
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -227,6 +234,8 @@ def get_dashboard_home(request: Request, db: Session = Depends(get_db)) -> HTMLR
             "urunler": urunler_data,
             "dip_alti_sayisi": dip_alti_sayisi,
             "firsat_sayisi": firsat_sayisi,
+            "toplam_birim_ek_kar": toplam_birim_ek_kar,
+            "toplam_10lu_ek_kar": round(toplam_birim_ek_kar * 10, 2),
         },
     )
 
@@ -645,15 +654,16 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
 
     tum_gecmis_kayitlari.sort(key=lambda x: (x.get("cekilme_zamani") or "", x.get("snapshot_id") or 0))
 
-    min_allowed_price = round(
-        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2
-    )
+    min_allowed_price = float(round(
+        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 0
+    ))
 
     return {
         "urun": {
             "id": product.id,
             "sku": product.sku,
             "urun_adi": product.urun_adi,
+        "kategori_rozeti": get_product_category_badge(product.sku, product.urun_adi),
             "benim_fiyatim": product.fiyat,
             "maliyet": product.maliyet,
             "min_marj_yuzde": product.min_marj_yuzde,

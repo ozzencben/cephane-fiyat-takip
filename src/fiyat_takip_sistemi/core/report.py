@@ -59,7 +59,7 @@ def prepare_report_data(db: Session) -> Dict[str, Any]:
 
     critical_alerts_data = []
     for alert in top_5_alerts:
-        min_allowed_price = round(alert.cost * (1.0 + alert.min_margin_pct / 100.0), 2)
+        min_allowed_price = float(round(alert.cost * (1.0 + alert.min_margin_pct / 100.0), 0))
         critical_alerts_data.append({
             "urun": alert.product_name,
             "sku": alert.product_sku,

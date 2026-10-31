@@ -94,3 +94,35 @@ def get_seller_profile(sku: str, comp_name: str, stokta: bool = True) -> Dict[st
     prof["kanal"] = channel_short
     prof["etiket"] = f"{channel_short} / {prof['satici']} (★{prof['puan']})"
     return prof
+
+
+def get_electronics_undercut_step(price: float) -> float:
+    """
+    Elektronik / cep telefonu sektörüne uygun kademeli fiyat kırma adımı:
+    - 20.000 TL üzeri cihazlarda (Telefon/Tablet): Rakibin 100 TL altı
+    - 5.000 TL - 20.000 TL arası ürünlerde (Saat/Kulaklık/Giriş Telefon): Rakibin 50 TL altı
+    - 5.000 TL altı aksesuarlarda (Adaptör/Kablo): Rakibin 10 TL altı
+    """
+    if price >= 20000.0:
+        return 100.0
+    if price >= 5000.0:
+        return 50.0
+    return 10.0
+
+
+def get_product_category_badge(sku: str, urun_adi: str = "") -> str:
+    badges = {
+        "CPH-001": "📱 Cep Telefonu · Apple Türkiye Garantili",
+        "CPH-002": "📱 Cep Telefonu · Apple Türkiye Garantili",
+        "CPH-003": "📱 Cep Telefonu · Apple Türkiye Garantili",
+        "CPH-004": "📱 Cep Telefonu · Samsung Türkiye Garantili",
+        "CPH-005": "📱 Cep Telefonu · Samsung Türkiye Garantili",
+        "CPH-006": "📱 Cep Telefonu · Samsung Türkiye Garantili",
+        "CPH-007": "📱 Cep Telefonu · Distribütör Garantili",
+        "CPH-008": "📟 Tablet · Apple Türkiye Garantili",
+        "CPH-009": "📟 Tablet · Xiaomi Türkiye Garantili",
+        "CPH-010": "⌚ Akıllı Saat · Samsung Türkiye Garantili",
+        "CPH-011": "🎧 Bluetooth Kulaklık · Apple Türkiye",
+        "CPH-012": "🔌 Hızlı Şarj Aksesuarı · Apple Türkiye",
+    }
+    return badges.get(sku, "📱 Elektronik · Resmi Garantili")
