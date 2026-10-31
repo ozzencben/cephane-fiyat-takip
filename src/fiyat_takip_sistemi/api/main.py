@@ -28,10 +28,14 @@ TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
-def format_tr_price(val: Optional[float], signed: bool = False) -> str:
+def format_tr_price(val: Any, signed: bool = False) -> str:
     if val is None:
         return "-"
-    s = f"{val:+,.2f}" if signed else f"{val:,.2f}"
+    try:
+        num = float(val)
+    except Exception:
+        return "0,00"
+    s = f"{num:+,.2f}" if signed else f"{num:,.2f}"
     return s.replace(",", "X").replace(".", ",").replace("X", ".")
 
 
