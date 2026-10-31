@@ -131,3 +131,5 @@ def reset_demo_state() -> None:
 
 if __name__ == "__main__":
     reset_demo_state()
+
+reset_demo_environment = reset_demo
