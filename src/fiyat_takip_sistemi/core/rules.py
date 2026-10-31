@@ -10,6 +10,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from .db import SessionLocal
 from .models import Competitor, Match, PriceSnapshot, Product
+from .seller_profiles import get_seller_profile
 
 
 class Severity(str, Enum):
@@ -88,6 +89,9 @@ def evaluate_rules(db: Session) -> List[Alert]:
 
         product_comp_snapshots.setdefault(product.id, []).append((competitor, latest_snap))
 
+        seller_info = get_seller_profile(product.sku, competitor.ad, latest_snap.stokta)
+        comp_display = seller_info['etiket']
+
         # Havale / Toptan Dip Fiyat Sınırı: maliyet × (1 + min_marj)
         min_allowed_price = round(product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2)
 
@@ -101,7 +105,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                     severity=Severity.ORTA,
                     product_sku=product.sku,
                     product_name=product.urun_adi,
-                    competitor_name=competitor.ad,
+                    competitor_name=comp_display,
                     current_my_price=product.fiyat,
                     current_comp_price=latest_snap.fiyat,
                     cost=product.maliyet,
@@ -125,7 +129,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                         severity=Severity.YUKSEK,
                         product_sku=product.sku,
                         product_name=product.urun_adi,
-                        competitor_name=competitor.ad,
+                        competitor_name=comp_display,
                         current_my_price=product.fiyat,
                         current_comp_price=latest_snap.fiyat,
                         cost=product.maliyet,
@@ -176,7 +180,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                     severity=severity,
                     product_sku=product.sku,
                     product_name=product.urun_adi,
-                    competitor_name=competitor.ad,
+                    competitor_name=comp_display,
                     current_my_price=product.fiyat,
                     current_comp_price=latest_snap.fiyat,
                     cost=product.maliyet,
@@ -211,7 +215,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
                             severity=Severity.DUSUK,
                             product_sku=product.sku,
                             product_name=product.urun_adi,
-                            competitor_name=cheapest_comp.ad,
+                            competitor_name=get_seller_profile(product.sku, cheapest_comp.ad, cheapest_snap.stokta)['etiket'],
                             current_my_price=product.fiyat,
                             current_comp_price=cheapest_snap.fiyat,
                             cost=product.maliyet,

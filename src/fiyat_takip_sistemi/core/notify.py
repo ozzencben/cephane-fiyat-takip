@@ -16,36 +16,50 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 MAX_TELEGRAM_MESSAGE_LENGTH = 4096
 
 
-def get_telegram_chat_id(token: Optional[str] = None) -> Optional[str]:
+def format_tr_price(val: Optional[float]) -> str:
+    if val is None:
+        return "-"
+    s = f"{val:,.2f}"
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def get_all_telegram_chat_ids(token: Optional[str] = None) -> List[str]:
     """
-    Kullanıcının bota attığı son mesajdan chat_id değerini otomatik tespit eder.
+    Hem .env içindeki TELEGRAM_CHAT_ID değerini hem de @Cep-haneFiyatTakipBot botuna
+    /start veya mesaj yazan tüm aktif kullanıcıların chat_id değerlerini toplar.
+    Böylece Serdar Bey kendi telefonundan bota /start yazdığında bildirimler anında ona da gider.
     """
     bot_token = token or TELEGRAM_TOKEN
+    chat_ids: List[str] = []
+    if TELEGRAM_CHAT_ID:
+        chat_ids.append(str(TELEGRAM_CHAT_ID))
+
     if not bot_token:
-        print("⚠️ TELEGRAM_TOKEN tanımlı değil.")
-        return None
+        return chat_ids
 
     url = f"https://api.telegram.org/bot{bot_token}/getUpdates"
     try:
-        resp = httpx.get(url, timeout=30.0)
+        resp = httpx.get(url, timeout=15.0)
         if resp.status_code == 200:
             updates = resp.json().get("result", [])
-            if updates:
-                last_update = updates[-1]
+            for upd in updates:
                 chat = (
-                    last_update.get("message", {}).get("chat", {})
-                    or last_update.get("edited_message", {}).get("chat", {})
-                    or last_update.get("channel_post", {}).get("chat", {})
+                    upd.get("message", {}).get("chat", {})
+                    or upd.get("edited_message", {}).get("chat", {})
+                    or upd.get("channel_post", {}).get("chat", {})
                 )
-                chat_id = chat.get("id")
-                if chat_id:
-                    return str(chat_id)
-        else:
-            print(f"⚠️ getUpdates başarısız (HTTP {resp.status_code}): {resp.text}")
+                cid = chat.get("id")
+                if cid and str(cid) not in chat_ids:
+                    chat_ids.append(str(cid))
     except Exception as e:
-        print(f"⚠️ Telegram getUpdates hatası: {e}")
+        print(f"⚠️ Telegram getUpdates uyarısı: {e}")
 
-    return None
+    return chat_ids
+
+
+def get_telegram_chat_id(token: Optional[str] = None) -> Optional[str]:
+    ids = get_all_telegram_chat_ids(token)
+    return ids[-1] if ids else None
 
 
 def format_daily_notification_message(
@@ -53,31 +67,36 @@ def format_daily_notification_message(
 ) -> str:
     """
     Cep-Hane Teknoloji Satın Alma Müdürlüğü için Telegram sabah brifingi formatı:
-    LLM yönetici özeti + en kritik 3 pazaryeri fiyat uyarısı ve Havale dip sınır analizi.
+    LLM yönetici özeti + en kritik 3 pazaryeri/satıcı fiyat uyarısı ve Havale dip sınır analizi.
     """
+    clean_report = (
+        llm_report.strip()
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )
     sections = [
         "📱 <b>CEP-HANE TEKNOLOJİ — GÜNLÜK FİYAT VE REKABET BRİFİNGİ</b>",
         "──────────────────────────────",
-        llm_report.strip(),
-        "\n🚨 <b>ÖNE ÇIKAN KRİTİK PAZARYERİ UYARILARI (İLK 3)</b>",
+        clean_report,
+        "\n🚨 <b>ÖNE ÇIKAN KRİTİK PAZARYERİ &amp; SATICI UYARILARI (İLK 3)</b>",
         "──────────────────────────────",
     ]
 
     for idx, alert in enumerate(critical_alerts[:3], 1):
-        urun = alert.get("urun", "Bilinmeyen Ürün")
-        rakip = alert.get("rakip", "Rakip")
+        urun = str(alert.get("urun", "Bilinmeyen Ürün")).replace("<", "&lt;").replace(">", "&gt;")
+        rakip = str(alert.get("rakip", "Rakip")).replace("<", "&lt;").replace(">", "&gt;")
         bizim_fiyat = alert.get("bizim_fiyat", 0.0)
         rakip_fiyat = alert.get("rakip_fiyat", 0.0)
         dip_sinir = alert.get("havale_dip_siniri")
         oneri = str(alert.get("oneri", "Aksiyon önerisi yok")).replace("<", "&lt;").replace(">", "&gt;")
         durum = str(alert.get("durum", "")).replace("<", "&lt;").replace(">", "&gt;")
 
-        dip_line = f" | Havale Dip: {dip_sinir:.2f} TL" if dip_sinir else ""
+        dip_line = f" | Havale Dip: {format_tr_price(dip_sinir)} TL" if dip_sinir else ""
 
         sections.append(
             f"<b>{idx}. {urun}</b>\n"
-            f"   • Kanal: {rakip}\n"
-            f"   • Cep-Hane: {bizim_fiyat:.2f} TL | Rakip: {rakip_fiyat:.2f} TL{dip_line}\n"
+            f"   • Kanal / Satıcı: <b>{rakip}</b>\n"
+            f"   • Cep-Hane: {format_tr_price(bizim_fiyat)} TL | Rakip: {format_tr_price(rakip_fiyat)} TL{dip_line}\n"
             f"   • Durum: {durum}\n"
             f"   • 💡 <i>{oneri}</i>\n"
         )
@@ -100,59 +119,42 @@ def send_telegram_message(
     parse_mode: str = "HTML",
 ) -> bool:
     """
-    httpx ile Telegram'ın sendMessage metodunu çağıran fonksiyon.
+    Bota kayıtlı tüm aktif kullanıcılara (veya belirtilen chat_id'ye) Telegram mesajı gönderir.
     """
     bot_token = token or TELEGRAM_TOKEN
-    target_chat_id = chat_id or TELEGRAM_CHAT_ID
-
     if not bot_token:
         print("❌ Hata: TELEGRAM_TOKEN .env dosyasında bulunamadı!")
         return False
 
-    if not target_chat_id:
-        print("⚠️ TELEGRAM_CHAT_ID bulunamadı, getUpdates ile otomatik aranıyor...")
-        target_chat_id = get_telegram_chat_id(bot_token)
-        if target_chat_id:
-            print(f"✓ Chat ID otomatik tespit edildi: {target_chat_id}")
-        else:
-            print("❌ Hata: TELEGRAM_CHAT_ID tespit edilemedi.")
-            print("   Lütfen Telegram'da @Cep-haneFiyatTakipBot botunuza gidip /start veya bir mesaj yazın!")
-            return False
-
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    payload = {
-        "chat_id": target_chat_id,
-        "text": text,
-        "parse_mode": parse_mode,
-        "disable_web_page_preview": True,
-    }
-
-    try:
-        resp = httpx.post(url, json=payload, timeout=30.0)
-        if resp.status_code == 200:
-            print(f"✓ Telegram bildirimi başarıyla gönderildi! (Chat ID: {target_chat_id})")
-            return True
-        else:
-            print(f"❌ Telegram gönderimi başarısız (HTTP {resp.status_code}): {resp.text}")
-            if parse_mode == "HTML":
-                payload["parse_mode"] = ""
-                retry_resp = httpx.post(url, json=payload, timeout=30.0)
-                if retry_resp.status_code == 200:
-                    print("✓ Düz metin formatında başarıyla iletildi.")
-                    return True
-            return False
-    except Exception as e:
-        print(f"❌ Telegram bağlantı hatası: {e}")
+    target_ids = [str(chat_id)] if chat_id else get_all_telegram_chat_ids(bot_token)
+    if not target_ids:
+        print("❌ Hata: TELEGRAM_CHAT_ID tespit edilemedi. Lütfen @Cep-haneFiyatTakipBot botuna /start yazın!")
         return False
 
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    any_success = False
 
-if __name__ == "__main__":
-    print("🤖 Cep-Hane Teknoloji Telegram Bildirim Testi Başlatılıyor...")
-    load_dotenv()
-    chat_id = get_telegram_chat_id()
-    if chat_id:
-        print(f"✓ Aktif Chat ID bulundu: {chat_id}")
-        send_telegram_message("🔔 Cep-Hane Teknoloji Fiyat Takip Sistemi: Telegram bot entegrasyon testi başarılı!", chat_id=chat_id)
-    else:
-        print("⚠️ Henüz bota bir mesaj atılmamış.")
-        print("   Lütfen Telegram uygulamasından @Cep-haneFiyatTakipBot botunu açın ve /start yazın.")
+    for target_chat_id in target_ids:
+        payload = {
+            "chat_id": target_chat_id,
+            "text": text,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": True,
+        }
+        try:
+            resp = httpx.post(url, json=payload, timeout=20.0)
+            if resp.status_code == 200:
+                print(f"✓ Telegram bildirimi başarıyla gönderildi! (Chat ID: {target_chat_id})")
+                any_success = True
+            else:
+                print(f"❌ Telegram gönderimi başarısız (HTTP {resp.status_code}): {resp.text}")
+                if parse_mode == "HTML":
+                    payload["parse_mode"] = ""
+                    retry_resp = httpx.post(url, json=payload, timeout=20.0)
+                    if retry_resp.status_code == 200:
+                        print(f"✓ Düz metin formatında iletildi (Chat ID: {target_chat_id}).")
+                        any_success = True
+        except Exception as e:
+            print(f"❌ Telegram bağlantı hatası ({target_chat_id}): {e}")
+
+    return any_success

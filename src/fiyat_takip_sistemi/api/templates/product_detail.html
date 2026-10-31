@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ detay.urun.urun_adi }} - Cep-Hane Teknoloji Fiyat Geçmişi</title>
+    <title>{{ detay.urun.urun_adi }} - Cep-Hane Teknoloji Satıcı &amp; Fiyat Geçmişi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -18,6 +18,9 @@
             --green-bg: #f0fdf4;
             --green-border: #bbf7d0;
             --green-text: #15803d;
+            --amber-bg: #fffbeb;
+            --amber-border: #fde68a;
+            --amber-text: #b45309;
             --gray-bg: #f1f5f9;
             --gray-border: #cbd5e1;
             --gray-text: #475569;
@@ -38,7 +41,7 @@
         }
 
         .container {
-            max-width: 1240px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -68,7 +71,7 @@
         }
 
         header h1 {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -80,7 +83,7 @@
         }
 
         .demo-badge {
-            background: #1e293b;
+            background: #0f172a;
             color: #ffffff;
             padding: 0.35rem 0.75rem;
             border-radius: 0.375rem;
@@ -112,7 +115,7 @@
         }
 
         .summary-value {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -129,6 +132,96 @@
 
         .text-green {
             color: var(--green-text);
+        }
+
+        /* Satıcı Karşılaştırma Kartları */
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .sellers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .seller-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .seller-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channel-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--gray-bg);
+            padding: 0.2rem 0.55rem;
+            border-radius: 0.25rem;
+        }
+
+        .rating-pill {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .seller-store-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .seller-big-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .seller-badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dip-status-note {
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.3rem;
+            margin-top: 0.2rem;
+        }
+
+        .dip-ok {
+            background: var(--green-bg);
+            color: var(--green-text);
+            border: 1px solid var(--green-border);
+        }
+
+        .dip-warn {
+            background: var(--red-bg);
+            color: var(--red-text);
+            border: 1px solid var(--red-border);
         }
 
         .chart-card {
@@ -222,8 +315,8 @@
             border: 1px solid var(--green-border);
         }
 
-        @media (max-width: 768px) {
-            .summary-grid {
+        @media (max-width: 900px) {
+            .summary-grid, .sellers-grid {
                 grid-template-columns: 1fr;
             }
             .chart-container {
@@ -241,23 +334,27 @@
                 <h1>{{ detay.urun.urun_adi }}</h1>
                 <div class="sku-tag">SKU: {{ detay.urun.sku }} | Ürün ID: #{{ detay.urun.id }}</div>
             </div>
-            <span class="demo-badge">Cep-Hane Teknoloji — Çoklu Pazaryeri Rekabet Analizi</span>
+            <span class="demo-badge">Cep-Hane Teknoloji — Satıcı &amp; Pazaryeri Rekabet Analizi</span>
         </header>
 
         <!-- Ürün Özet Kartları -->
         <section class="summary-grid">
             <div class="summary-card">
                 <div class="summary-label">Cep-Hane Kredi Kartı Fiyatı</div>
-                <div class="summary-value">{{ "%.2f"|format(detay.urun.benim_fiyatim) }} TL</div>
+                <div class="summary-value">{{ detay.urun.benim_fiyatim|tr_fiyat }} TL</div>
                 <div class="summary-sub">cephaneteknoloji.com liste fiyatımız</div>
             </div>
             <div class="summary-card">
                 <div class="summary-label">En Düşük Pazaryeri Rakibi</div>
                 {% if karsilastirma.en_dusuk_rakip_fiyat is not none %}
                     <div class="summary-value {% if karsilastirma.durum == 'RAKİP UCUZ' %}text-red{% elif karsilastirma.durum == 'BİZ UCUZUZ' %}text-green{% endif %}">
-                        {{ "%.2f"|format(karsilastirma.en_dusuk_rakip_fiyat) }} TL
+                        {{ karsilastirma.en_dusuk_rakip_fiyat|tr_fiyat }} TL
                     </div>
-                    <div class="summary-sub">Fark: {{ "%+.2f"|format(karsilastirma.fark) }} TL ({{ "%+.1f"|format(karsilastirma.fark_yuzde) }}%)</div>
+                    <div class="summary-sub">
+                        {% if karsilastirma.en_ucuz_rakip_detay %}
+                            {{ karsilastirma.en_ucuz_rakip_detay.kanal }} / {{ karsilastirma.en_ucuz_rakip_detay.satici }} ({{ karsilastirma.fark|tr_fark }} TL)
+                        {% endif %}
+                    </div>
                 {% else %}
                     <div class="summary-value">-</div>
                     <div class="summary-sub">Henüz rakip verisi yok</div>
@@ -265,13 +362,13 @@
             </div>
             <div class="summary-card">
                 <div class="summary-label">Havale / Toptan Dip Sınırı</div>
-                <div class="summary-value">{{ "%.2f"|format(detay.urun.min_kabul_edilebilir_fiyat) }} TL</div>
-                <div class="summary-sub">Maliyet: {{ "%.2f"|format(detay.urun.maliyet) }} TL | Min Marj: %{{ "%.0f"|format(detay.urun.min_marj_yuzde) }}</div>
+                <div class="summary-value">{{ detay.urun.min_kabul_edilebilir_fiyat|tr_fiyat }} TL</div>
+                <div class="summary-sub">Maliyet: {{ detay.urun.maliyet|tr_fiyat }} TL | Min Marj: %{{ "%.0f"|format(detay.urun.min_marj_yuzde) }}</div>
             </div>
             <div class="summary-card">
                 <div class="summary-label">Satın Alma Sistem Önerisi</div>
                 {% if karsilastirma.onerilen_fiyat is not none %}
-                    <div class="summary-value">{{ "%.2f"|format(karsilastirma.onerilen_fiyat) }} TL</div>
+                    <div class="summary-value">{{ karsilastirma.onerilen_fiyat|tr_fiyat }} TL</div>
                 {% else %}
                     <div class="summary-value">{{ karsilastirma.durum }}</div>
                 {% endif %}
@@ -279,11 +376,47 @@
             </div>
         </section>
 
+        <!-- Pazaryeri En Ucuz Satıcı Profilleri -->
+        <div class="section-title">🏪 Pazaryerlerindeki En Ucuz Rakip Satıcı Profilleri</div>
+        <section class="sellers-grid">
+            {% for role_det in [karsilastirma.rakip_a_detay, karsilastirma.rakip_b_detay, karsilastirma.rakip_c_detay] %}
+            {% if role_det %}
+            <div class="seller-card">
+                <div class="seller-card-header">
+                    <span class="channel-badge">{{ role_det.kanal }}</span>
+                    <span class="rating-pill">★ {{ role_det.puan }} Mağaza Puanı</span>
+                </div>
+                <div class="seller-store-name">🏪 Satıcı: {{ role_det.satici }}</div>
+                <div class="seller-big-price">{{ role_det.fiyat|tr_fiyat }} TL</div>
+                <div class="seller-badges-row">
+                    <span>📦 {{ role_det.stok_notu }}</span>
+                    <span>·</span>
+                    <span>🚚 {{ role_det.kargo }}</span>
+                </div>
+                {% if role_det.dip_alti %}
+                    <div class="dip-status-note dip-warn">
+                        ⛔ Havale dip sınırınızın ({{ detay.urun.min_kabul_edilebilir_fiyat|tr_fiyat }} TL) altında! Kârlılığı bozmadan rekabet edilemez.
+                    </div>
+                {% else %}
+                    <div class="dip-status-note dip-ok">
+                        ✅ Havale dip sınırınızın +{{ role_det.dip_fark|tr_fiyat }} TL üzerinde (Kârlı rekabet alanında).
+                    </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="seller-card" style="justify-content:center;align-items:center;text-align:center;color:var(--text-muted);">
+                <div>⏳ Bu pazaryeri ilanı için <strong>Eşleşme Onayı</strong> bekleniyor.</div>
+                <a href="/eslesmeler" style="color:#2563eb;font-weight:600;font-size:0.85rem;margin-top:0.4rem;">Eşleşme Onay Ekranına Git →</a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </section>
+
         <!-- Chart.js Çizgi Grafik -->
         <section class="chart-card">
             <div class="chart-header">
-                <h2>Son 14 Günlük Pazaryeri Fiyat Değişim Grafiği</h2>
-                <span>Yeşil kesikli çizgi: Cep-Hane Liste Fiyatı | Turuncu noktalı çizgi: Havale Dip Sınırı</span>
+                <h2>Son 14 Günlük Pazaryeri &amp; Satıcı Fiyat Değişim Grafiği</h2>
+                <span>Yeşil kesikli: Cep-Hane Liste Fiyatı | Turuncu noktalı: Havale Dip Sınırı</span>
             </div>
             {% if detay.gecmis %}
             <div class="chart-container">
@@ -299,7 +432,7 @@
         <!-- Fiyat Geçmişi Tablosu -->
         <section class="table-card">
             <div class="table-header">
-                Kronolojik Pazaryeri Fiyat Kayıtları ({{ detay.gecmis|length }} Kayıt)
+                Kronolojik Pazaryeri ve Satıcı Fiyat Kayıtları ({{ detay.gecmis|length }} Kayıt)
             </div>
             {% if detay.gecmis %}
             <div class="table-wrapper">
@@ -307,7 +440,7 @@
                     <thead>
                         <tr>
                             <th>Tarih</th>
-                            <th>Pazaryeri Kanalı</th>
+                            <th>Pazaryeri &amp; Satıcı Mağaza</th>
                             <th>Rakip İlan Başlığı</th>
                             <th>Rakip Fiyatı</th>
                             <th>Cep-Hane Liste Fiyatıyla Fark</th>
@@ -321,9 +454,9 @@
                             <td>{{ kayit.cekilme_zamani[:16] if kayit.cekilme_zamani else "-" }}</td>
                             <td><strong>{{ kayit.rakip_adi }}</strong></td>
                             <td>{{ kayit.ham_urun_adi }}</td>
-                            <td><strong>{{ "%.2f"|format(kayit.fiyat) }} TL</strong></td>
+                            <td><strong>{{ kayit.fiyat|tr_fiyat }} TL</strong></td>
                             <td class="{% if diff < 0 %}text-red{% elif diff > 0 %}text-green{% endif %}">
-                                {{ "%+.2f"|format(diff) }} TL
+                                {{ diff|tr_fark }} TL
                             </td>
                             <td>
                                 {% if kayit.stokta %}
@@ -370,9 +503,8 @@
 
             const datasets = [];
 
-            // 1. Cep-Hane Liste Fiyatı (Yeşil kesikli çizgi)
             datasets.push({
-                label: "Cep-Hane Liste Fiyatı (" + myPrice.toFixed(2) + " TL)",
+                label: "Cep-Hane Liste Fiyatı (" + myPrice.toLocaleString("tr-TR", {minimumFractionDigits: 2}) + " TL)",
                 data: labels.map(function () { return myPrice; }),
                 borderColor: "#15803d",
                 backgroundColor: "rgba(21, 128, 61, 0.05)",
@@ -382,9 +514,8 @@
                 tension: 0
             });
 
-            // 2. Havale / Toptan Dip Sınırı (Turuncu noktalı çizgi)
             datasets.push({
-                label: "Havale Dip Sınırı (" + minPrice.toFixed(2) + " TL)",
+                label: "Havale Dip Sınırı (" + minPrice.toLocaleString("tr-TR", {minimumFractionDigits: 2}) + " TL)",
                 data: labels.map(function () { return minPrice; }),
                 borderColor: "#d97706",
                 backgroundColor: "rgba(217, 119, 6, 0.05)",
@@ -394,7 +525,6 @@
                 tension: 0
             });
 
-            // 3. Her pazaryeri için ayrı çizgi
             rakipler.forEach(function (rakip, idx) {
                 const dateMap = {};
                 (rakip.kayitlar || []).forEach(function (k) {
@@ -442,7 +572,7 @@
                             callbacks: {
                                 label: function (context) {
                                     const val = context.parsed.y;
-                                    return context.dataset.label + ": " + (val !== null ? val.toFixed(2) + " TL" : "-");
+                                    return context.dataset.label + ": " + (val !== null ? val.toLocaleString("tr-TR", {minimumFractionDigits: 2}) + " TL" : "-");
                                 }
                             }
                         }
@@ -451,7 +581,7 @@
                         y: {
                             ticks: {
                                 callback: function (value) {
-                                    return value + " TL";
+                                    return value.toLocaleString("tr-TR") + " TL";
                                 }
                             }
                         }

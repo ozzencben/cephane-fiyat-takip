@@ -1,39 +1,54 @@
+import io
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from ..core.db import get_db
 from ..core.models import Competitor, Match, PriceSnapshot, Product
 from ..core.report import get_latest_report_text
+from ..core.seller_profiles import get_seller_profile
 from ..scripts.seed_history import seed_price_history
 
 app = FastAPI(
     title="Cep-Hane Teknoloji | Fiyat Takip ve Rekabet Paneli API",
-    description="Rakip fiyat karşılaştırma, günlük LLM raporu ve fiyat geçmişi API uç noktaları.",
-    version="1.0.0",
+    description="Pazaryeri satıcı karşılaştırma, günlük yapay zeka raporu, Excel çıktı ve fiyat geçmişi API uç noktaları.",
+    version="2.0.0",
 )
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
+def format_tr_price(val: Optional[float], signed: bool = False) -> str:
+    if val is None:
+        return "-"
+    s = f"{val:+,.2f}" if signed else f"{val:,.2f}"
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+templates.env.filters["tr_fiyat"] = lambda v: format_tr_price(v, signed=False)
+templates.env.filters["tr_fark"] = lambda v: format_tr_price(v, signed=True)
+
+
 def _get_competitor_role_map(db: Session) -> Dict[int, str]:
-    """Rakip ID'lerini Rakip A, Rakip B, Rakip C anahtarlarıyla eşleştirir."""
+    """Rakip ID'lerini rakip_a (PttAVM), rakip_b (Hepsiburada), rakip_c (N11/Pazarama) ile eşleştirir."""
     role_map: Dict[int, str] = {}
     for comp in db.query(Competitor).all():
         ad_lower = comp.ad.lower()
-        if "rakip a" in ad_lower or "bookstoscrape" in ad_lower or "pttavm" in ad_lower:
+        if "pttavm" in ad_lower or "rakip a" in ad_lower or "bookstoscrape" in ad_lower:
             role_map[comp.id] = "rakip_a"
-        elif "rakip b" in ad_lower or "webscraper" in ad_lower or "hepsiburada" in ad_lower:
+        elif "hepsiburada" in ad_lower or "rakip b" in ad_lower or "webscraper" in ad_lower:
             role_map[comp.id] = "rakip_b"
-        elif "rakip c" in ad_lower or "sahte magaza" in ad_lower or "n11" in ad_lower or "pazarama" in ad_lower:
+        elif "n11" in ad_lower or "pazarama" in ad_lower or "rakip c" in ad_lower or "sahte magaza" in ad_lower:
             role_map[comp.id] = "rakip_c"
     return role_map
 
@@ -44,7 +59,7 @@ def _build_product_comparison_item(
     competitors_by_id: Dict[int, Competitor],
     role_map: Dict[int, str],
 ) -> Dict[str, Any]:
-    """Tek bir ürün için onaylı rakip fiyatlarını, farkı ve fiyat önerisini hesaplar."""
+    """Tek bir ürün için onaylı pazaryeri fiyatlarını, satıcı mağaza profillerini, farkı ve fiyat önerisini hesaplar."""
     matches = (
         db.query(Match)
         .filter(
@@ -59,7 +74,16 @@ def _build_product_comparison_item(
         "rakip_b": None,
         "rakip_c": None,
     }
+    rakip_detay_by_role: Dict[str, Optional[Dict[str, Any]]] = {
+        "rakip_a": None,
+        "rakip_b": None,
+        "rakip_c": None,
+    }
     competitor_details: List[Dict[str, Any]] = []
+
+    min_allowed_price = round(
+        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2
+    )
 
     for match in matches:
         latest_snap = (
@@ -77,33 +101,48 @@ def _build_product_comparison_item(
         comp = competitors_by_id.get(match.competitor_id)
         comp_name = comp.ad if comp else f"Rakip #{match.competitor_id}"
         role_key = role_map.get(match.competitor_id)
-        if role_key:
-            rakip_prices_by_role[role_key] = latest_snap.fiyat
+        seller_prof = get_seller_profile(product.sku, comp_name, latest_snap.stokta)
 
-        competitor_details.append({
+        dip_fark = round(latest_snap.fiyat - min_allowed_price, 2)
+        detail_obj = {
             "competitor_id": match.competitor_id,
             "rakip_adi": comp_name,
+            "kanal": seller_prof["kanal"],
+            "satici": seller_prof["satici"],
+            "puan": seller_prof["puan"],
+            "stok_notu": seller_prof["stok_notu"],
+            "kargo": seller_prof["kargo"],
+            "etiket": seller_prof["etiket"],
             "ham_urun_adi": match.ham_urun_adi,
             "fiyat": latest_snap.fiyat,
             "stokta": latest_snap.stokta,
+            "dip_fark": dip_fark,
+            "dip_alti": latest_snap.fiyat <= min_allowed_price,
             "url": latest_snap.url,
             "cekilme_zamani": latest_snap.cekilme_zamani.strftime("%Y-%m-%d %H:%M:%S")
             if latest_snap.cekilme_zamani
             else None,
-        })
+        }
 
-    valid_prices = [c["fiyat"] for c in competitor_details if c["fiyat"] is not None]
-    min_comp_price: Optional[float] = min(valid_prices) if valid_prices else None
+        if role_key:
+            rakip_prices_by_role[role_key] = latest_snap.fiyat
+            rakip_detay_by_role[role_key] = detail_obj
+
+        competitor_details.append(detail_obj)
+
+    valid_details = [c for c in competitor_details if c["fiyat"] is not None]
+    cheapest_detail: Optional[Dict[str, Any]] = (
+        min(valid_details, key=lambda x: x["fiyat"]) if valid_details else None
+    )
+    min_comp_price: Optional[float] = cheapest_detail["fiyat"] if cheapest_detail else None
 
     fark: Optional[float] = None
     fark_yuzde: Optional[float] = None
     durum = "VERİ YOK"
     onerilen_fiyat: Optional[float] = None
+    yeni_marj_yuzde: Optional[float] = None
     oneri_notu: Optional[str] = None
-
-    min_allowed_price = round(
-        product.maliyet * (1.0 + product.min_marj_yuzde / 100.0), 2
-    )
+    dip_alti = False
 
     if min_comp_price is not None:
         fark = round(min_comp_price - product.fiyat, 2)
@@ -112,19 +151,22 @@ def _build_product_comparison_item(
         if min_comp_price < product.fiyat:
             durum = "RAKİP UCUZ"
             if min_comp_price <= min_allowed_price:
+                dip_alti = True
                 candidate_price = round(min_comp_price * 0.99, 2)
                 onerilen_fiyat = candidate_price
                 oneri_notu = (
-                    f"Marjı bozmadan rekabet edemezsin "
-                    f"(Rakip: {min_comp_price:.2f} TL ≤ Havale Dip: {min_allowed_price:.2f} TL)"
+                    f"⛔ Marjı bozmadan rekabet edilemez "
+                    f"(Rakip: {format_tr_price(min_comp_price)} TL ≤ Havale Dip: {format_tr_price(min_allowed_price)} TL)"
                 )
             else:
                 raw_cand = round(min_comp_price * 0.99, 2)
                 candidate_price = raw_cand if raw_cand >= min_allowed_price else min_allowed_price
                 onerilen_fiyat = candidate_price
                 safe_margin = ((candidate_price - product.maliyet) / product.maliyet) * 100.0
+                yeni_marj_yuzde = round(safe_margin, 1)
                 oneri_notu = (
-                    f"Önerilen: {candidate_price:.2f} TL (Havale Dip: {min_allowed_price:.2f} TL, %{safe_margin:.1f} marj korunur)"
+                    f"🎯 Önerilen: {format_tr_price(candidate_price)} TL "
+                    f"(Havale dip korunur, %{safe_margin:.1f} marj ile 1. sıra alınır)"
                 )
         elif min_comp_price > product.fiyat:
             durum = "BİZ UCUZUZ"
@@ -132,8 +174,11 @@ def _build_product_comparison_item(
             if target_fiyat > product.fiyat:
                 ek_kar = round(target_fiyat - product.fiyat, 2)
                 onerilen_fiyat = target_fiyat
+                safe_margin = ((target_fiyat - product.maliyet) / product.maliyet) * 100.0
+                yeni_marj_yuzde = round(safe_margin, 1)
                 oneri_notu = (
-                    f"FIRSAT: 1. sırayı kaybetmeden {target_fiyat:.2f} TL'ye çekilebilir (+{ek_kar:.2f} TL ek marj)"
+                    f"💡 FIRSAT: 1. sırayı kaybetmeden {format_tr_price(target_fiyat)} TL'ye çekilebilir "
+                    f"(+{format_tr_price(ek_kar)} TL ek kâr)"
                 )
             else:
                 oneri_notu = "Fiyat avantajı bizde; mevcut liste fiyatı korunabilir."
@@ -152,11 +197,17 @@ def _build_product_comparison_item(
         "rakip_a": rakip_prices_by_role["rakip_a"],
         "rakip_b": rakip_prices_by_role["rakip_b"],
         "rakip_c": rakip_prices_by_role["rakip_c"],
+        "rakip_a_detay": rakip_detay_by_role["rakip_a"],
+        "rakip_b_detay": rakip_detay_by_role["rakip_b"],
+        "rakip_c_detay": rakip_detay_by_role["rakip_c"],
         "en_dusuk_rakip_fiyat": min_comp_price,
+        "en_ucuz_rakip_detay": cheapest_detail,
         "fark": fark,
         "fark_yuzde": fark_yuzde,
         "durum": durum,
+        "dip_alti": dip_alti,
         "onerilen_fiyat": onerilen_fiyat,
+        "yeni_marj_yuzde": yeni_marj_yuzde,
         "oneri_notu": oneri_notu,
         "rakip_fiyatlari": competitor_details,
     }
@@ -164,19 +215,109 @@ def _build_product_comparison_item(
 
 @app.get("/", response_class=HTMLResponse, tags=["Web Paneli"])
 def get_dashboard_home(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    """
-    Kılavuz Gün 3 (11:00-13:30 Ana sayfa ve ürün tablosu):
-    Üstte 3 özet kutusu, altında günün LLM raporu ve altında arama/filtre destekli
-    ürün karşılaştırma tablosunu gösterir.
-    """
     ozet_data = get_ozet(db=db)
     urunler_data = get_urunler(db=db)
+    dip_alti_sayisi = sum(1 for u in urunler_data if u.get("dip_alti"))
+    firsat_sayisi = sum(1 for u in urunler_data if u.get("durum") == "BİZ UCUZUZ")
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
             "ozet": ozet_data,
             "urunler": urunler_data,
+            "dip_alti_sayisi": dip_alti_sayisi,
+            "firsat_sayisi": firsat_sayisi,
+        },
+    )
+
+
+@app.get("/indir/onerilen-fiyatlar.xlsx", tags=["Excel İndir"])
+def download_recommended_prices_excel(db: Session = Depends(get_db)):
+    """
+    Cep-Hane Teknoloji Satın Alma Müdürlüğü ve PraPazar entegrasyonu için
+    tüm pazaryeri satıcı analizlerini ve önerilen yeni fiyatları Excel (.xlsx) olarak indirir.
+    """
+    urunler_data = get_urunler(db=db)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Cep-Hane Fiyat Önerileri"
+
+    headers = [
+        "SKU",
+        "Ürün Adı",
+        "Cep-Hane Liste Fiyatı (TL)",
+        "Havale / Dip Sınırı (TL)",
+        "PttAVM En Ucuz (Satıcı & Fiyat)",
+        "Hepsiburada En Ucuz (Satıcı & Fiyat)",
+        "N11 / Pazarama En Ucuz (Satıcı & Fiyat)",
+        "En Ucuz Rakip Kanal & Mağaza",
+        "En Ucuz Rakip Fiyatı (TL)",
+        "Rekabet Durumu",
+        "Sistemin Önerdiği Fiyat (TL)",
+        "Satın Alma Aksiyon Notu",
+    ]
+    ws.append(headers)
+
+    header_fill = PatternFill(start_color="1E293B", end_color="1E293B", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True, size=11)
+    thin_border = Border(
+        left=Side(style="thin", color="CBD5E1"),
+        right=Side(style="thin", color="CBD5E1"),
+        top=Side(style="thin", color="CBD5E1"),
+        bottom=Side(style="thin", color="CBD5E1"),
+    )
+
+    for col_idx in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col_idx)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    def _fmt_cell(det: Optional[Dict[str, Any]]) -> str:
+        if not det or det.get("fiyat") is None:
+            return "Onay Bekliyor"
+        return f"{format_tr_price(det['fiyat'])} TL ({det['satici']} ★{det['puan']})"
+
+    for u in urunler_data:
+        cheapest = u.get("en_ucuz_rakip_detay")
+        cheapest_label = cheapest["etiket"] if cheapest else "-"
+        onerilen = u.get("onerilen_fiyat") if not u.get("dip_alti") else u.get("benim_fiyatim")
+
+        row = [
+            u["sku"],
+            u["urun_adi"],
+            u["benim_fiyatim"],
+            u["min_kabul_edilebilir_fiyat"],
+            _fmt_cell(u.get("rakip_a_detay")),
+            _fmt_cell(u.get("rakip_b_detay")),
+            _fmt_cell(u.get("rakip_c_detay")),
+            cheapest_label,
+            u.get("en_dusuk_rakip_fiyat") or 0.0,
+            "EN UCUZ BİZİZ" if u["durum"] == "BİZ UCUZUZ" else u["durum"],
+            onerilen or u["benim_fiyatim"],
+            u.get("oneri_notu") or "",
+        ]
+        ws.append(row)
+
+    for row_cells in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(headers)):
+        for c in row_cells:
+            c.border = thin_border
+            c.alignment = Alignment(vertical="center")
+
+    col_widths = [12, 52, 22, 22, 32, 32, 32, 30, 22, 18, 24, 58]
+    for i, w in enumerate(col_widths, 1):
+        ws.column_dimensions[ws.cell(row=1, column=i).column_letter].width = w
+
+    stream = io.BytesIO()
+    wb.save(stream)
+    stream.seek(0)
+
+    return StreamingResponse(
+        stream,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="CepHane_Onerilen_Fiyat_Listesi.xlsx"'
         },
     )
 
@@ -185,11 +326,6 @@ def get_dashboard_home(request: Request, db: Session = Depends(get_db)) -> HTMLR
 def get_product_detail_page(
     id: int, request: Request, db: Session = Depends(get_db)
 ) -> HTMLResponse:
-    """
-    Kılavuz Gün 3 (14:30-17:00 Ürün detay sayfası ve fiyat geçmişi):
-    Ürüne tıklayınca açılan sayfada Chart.js ile her rakip için bir çizgi ve
-    kendi fiyatımız için sabit çizgi içeren 14 günlük fiyat geçmişi grafiğini gösterir.
-    """
     gecmis_data = get_urun_gecmis(id=id, db=db)
     product = db.query(Product).filter(Product.id == id).first()
     competitors_by_id = {c.id: c for c in db.query(Competitor).all()}
@@ -214,7 +350,6 @@ def _serialize_match_row(
     products_by_id: Dict[int, Product],
     competitors_by_id: Dict[int, Competitor],
 ) -> Dict[str, Any]:
-    """Tek bir eşleşme kaydını onay ekranı için zenginleştirir."""
     prod = products_by_id.get(match.product_id)
     comp = competitors_by_id.get(match.competitor_id)
 
@@ -228,9 +363,12 @@ def _serialize_match_row(
         .first()
     )
 
+    comp_name = comp.ad if comp else f"Rakip #{match.competitor_id}"
+    seller_prof = get_seller_profile(prod.sku if prod else "CPH-001", comp_name, latest_snap.stokta if latest_snap else True)
+
     if match.skor >= 80.0:
         oneri_metni = (
-            f"Öneri: Aynı ürün (Benzerlik %{match.skor:.0f}, alt başlık/kısaltma farkı görünüyor)"
+            f"Öneri: Aynı ürün (Benzerlik %{match.skor:.0f}, model kodu/kısaltma farkı görünüyor)"
         )
     else:
         oneri_metni = (
@@ -244,7 +382,7 @@ def _serialize_match_row(
         "urun_adi": prod.urun_adi if prod else "Bilinmeyen Ürün",
         "benim_fiyatim": prod.fiyat if prod else 0.0,
         "competitor_id": match.competitor_id,
-        "rakip_adi": comp.ad if comp else f"Rakip #{match.competitor_id}",
+        "rakip_adi": seller_prof["etiket"],
         "ham_urun_adi": match.ham_urun_adi,
         "rakip_fiyat": latest_snap.fiyat if latest_snap else None,
         "skor": match.skor,
@@ -257,11 +395,6 @@ def _serialize_match_row(
 def get_matches_review_page(
     request: Request, db: Session = Depends(get_db)
 ) -> HTMLResponse:
-    """
-    Kılavuz Gün 3 (17:00-18:30 Eşleşme onay ekranı):
-    Durumu 'onay_bekliyor' olan eşleşmeleri iki ürün adı yan yana gösterilen
-    bir listede 'Aynı ürün' ve 'Farklı ürün' butonlarıyla sunar.
-    """
     products_by_id = {p.id: p for p in db.query(Product).all()}
     competitors_by_id = {c.id: c for c in db.query(Competitor).all()}
 
@@ -301,11 +434,6 @@ def get_matches_review_page(
 async def post_match_decision(
     match_id: int, request: Request, db: Session = Depends(get_db)
 ):
-    """
-    Kılavuz Gün 3 (17:00-18:30 Eşleşme onay ekranı):
-    'Aynı ürün' (onayli) veya 'Farklı ürün' (reddedildi) butonuna basıldığında
-    matches tablosunda durumu günceller.
-    """
     match = db.query(Match).filter(Match.id == match_id).first()
     if not match:
         raise HTTPException(
@@ -319,84 +447,87 @@ async def post_match_decision(
     if "application/json" in content_type and raw_body:
         try:
             body_json = json.loads(raw_body)
-            karar_val = str(body_json.get("karar", "")).strip().lower()
+            karar_val = str(body_json.get("karar", "")).strip()
         except Exception:
-            karar_val = ""
-    else:
-        parsed_form = parse_qs(raw_body)
-        karar_val = parsed_form.get("karar", [""])[0].strip().lower()
+            pass
 
-    if karar_val in ("onayli", "ayni", "same", "approve"):
+    if not karar_val and raw_body:
+        parsed_form = parse_qs(raw_body)
+        if "karar" in parsed_form and parsed_form["karar"]:
+            karar_val = parsed_form["karar"][0].strip()
+
+    if not karar_val:
+        karar_val = str(request.query_params.get("karar", "")).strip()
+
+    normalized = karar_val.lower()
+    if normalized in ("onayli", "onayla", "ayni", "ayni_urun", "approve"):
         match.durum = "onayli"
-    elif karar_val in ("reddedildi", "farkli", "different", "reject"):
+    elif normalized in ("reddedildi", "reddet", "farkli", "farkli_urun", "reject"):
         match.durum = "reddedildi"
     else:
         raise HTTPException(
             status_code=400,
-            detail="Geçersiz karar değeri. 'onayli' veya 'reddedildi' olmalıdır.",
+            detail="Geçersiz karar değeri. 'onayli' veya 'reddedildi' gönderilmelidir.",
         )
 
     db.commit()
+    db.refresh(match)
 
-    # Onaylanan eşleşmenin 14 günlük örnek geçmişini de tamamla
     if match.durum == "onayli":
-        seed_price_history(db, days=14)
+        product = db.query(Product).filter(Product.id == match.product_id).first()
+        latest_snap = (
+            db.query(PriceSnapshot)
+            .filter(
+                PriceSnapshot.competitor_id == match.competitor_id,
+                PriceSnapshot.ham_urun_adi == match.ham_urun_adi,
+            )
+            .order_by(desc(PriceSnapshot.cekilme_zamani), desc(PriceSnapshot.id))
+            .first()
+        )
+        existing_count = (
+            db.query(PriceSnapshot)
+            .filter(
+                PriceSnapshot.competitor_id == match.competitor_id,
+                PriceSnapshot.ham_urun_adi == match.ham_urun_adi,
+            )
+            .count()
+        )
+        if product and existing_count < 10:
+            seed_price_history(
+                db=db,
+                competitor_id=match.competitor_id,
+                ham_urun_adi=match.ham_urun_adi,
+                base_price=latest_snap.fiyat if latest_snap else product.fiyat,
+                url=latest_snap.url if latest_snap else "",
+                days=14,
+            )
 
-    if "application/json" in content_type:
-        return {"ok": True, "match_id": match.id, "yeni_durum": match.durum}
+    accept_header = request.headers.get("accept", "")
+    if "application/json" in accept_header and "text/html" not in accept_header:
+        return {
+            "basarili": True,
+            "match_id": match.id,
+            "yeni_durum": match.durum,
+        }
 
     return RedirectResponse(url="/eslesmeler", status_code=303)
 
 
-@app.get("/api/eslesmeler", tags=["API"])
-def get_api_eslesmeler(db: Session = Depends(get_db)) -> Dict[str, Any]:
-    """Onay bekleyen ve manuel karar verilmiş eşleşmeleri JSON olarak döndürür."""
-    products_by_id = {p.id: p for p in db.query(Product).all()}
-    competitors_by_id = {c.id: c for c in db.query(Competitor).all()}
-
-    pending_rows = (
-        db.query(Match)
-        .filter(Match.durum == "onay_bekliyor")
-        .order_by(desc(Match.skor), Match.id.asc())
-        .all()
-    )
-    decided_rows = (
-        db.query(Match)
-        .filter(Match.durum.in_(["onayli", "reddedildi"]))
-        .order_by(desc(Match.id))
-        .all()
-    )
-
-    return {
-        "bekleyen_sayisi": len(pending_rows),
-        "bekleyenler": [
-            _serialize_match_row(db, m, products_by_id, competitors_by_id)
-            for m in pending_rows
-        ],
-        "tamamlananlar": [
-            _serialize_match_row(db, m, products_by_id, competitors_by_id)
-            for m in decided_rows
-        ],
-    }
-
-
 @app.get("/api/ozet", tags=["API"])
 def get_ozet(db: Session = Depends(get_db)) -> Dict[str, Any]:
-    """
-    Kılavuz Gün 3 (09:00-11:00 API iskeleti):
-    Toplam ürün, rakibin ucuz olduğu ürün sayısı, son güncelleme zamanı ve son raporu döndürür.
-    """
-    products = db.query(Product).order_by(Product.id.asc()).all()
+    products = db.query(Product).all()
+    toplam_urun = len(products)
+
     competitors_by_id = {c.id: c for c in db.query(Competitor).all()}
     role_map = _get_competitor_role_map(db)
 
-    total_products = len(products)
-    competitor_cheaper_count = 0
-
+    rakibin_ucuz_oldugu_sayisi = 0
     for prod in products:
-        item = _build_product_comparison_item(db, prod, competitors_by_id, role_map)
-        if item["durum"] == "RAKİP UCUZ":
-            competitor_cheaper_count += 1
+        comp_item = _build_product_comparison_item(
+            db, prod, competitors_by_id, role_map
+        )
+        if comp_item["durum"] == "RAKİP UCUZ":
+            rakibin_ucuz_oldugu_sayisi += 1
 
     latest_snap = (
         db.query(PriceSnapshot)
@@ -409,49 +540,43 @@ def get_ozet(db: Session = Depends(get_db)) -> Dict[str, Any]:
         else "Henüz veri yok"
     )
 
-    pending_matches_count = (
+    onay_bekleyen_sayisi = (
         db.query(Match).filter(Match.durum == "onay_bekliyor").count()
     )
 
-    son_rapor = get_latest_report_text(db)
+    son_rapor_metni = get_latest_report_text(db)
 
     return {
-        "toplam_urun": total_products,
-        "rakibin_ucuz_oldugu_urun_sayisi": competitor_cheaper_count,
+        "toplam_urun": toplam_urun,
+        "rakibin_ucuz_oldugu_urun_sayisi": rakibin_ucuz_oldugu_sayisi,
         "bizim_avantajli_oldugumuz_urun_sayisi": max(
-            0, total_products - competitor_cheaper_count
+            0, toplam_urun - rakibin_ucuz_oldugu_sayisi
         ),
-        "onay_bekleyen_eslesme_sayisi": pending_matches_count,
+        "onay_bekleyen_eslesme_sayisi": onay_bekleyen_sayisi,
         "son_guncelleme_zamani": son_guncelleme,
-        "son_rapor": son_rapor,
+        "son_rapor": son_rapor_metni,
     }
 
 
 @app.get("/api/urunler", tags=["API"])
 def get_urunler(db: Session = Depends(get_db)) -> List[Dict[str, Any]]:
-    """
-    Kılavuz Gün 3 (09:00-11:00 API iskeleti):
-    Tüm ürünleri ve onaylı rakip fiyatlarını karşılaştırmalı olarak döndürür.
-    """
     products = db.query(Product).order_by(Product.id.asc()).all()
+    if not products:
+        return []
+
     competitors_by_id = {c.id: c for c in db.query(Competitor).all()}
     role_map = _get_competitor_role_map(db)
 
     result: List[Dict[str, Any]] = []
     for prod in products:
-        result.append(
-            _build_product_comparison_item(db, prod, competitors_by_id, role_map)
-        )
+        item = _build_product_comparison_item(db, prod, competitors_by_id, role_map)
+        result.append(item)
 
     return result
 
 
-@app.get("/api/urun/{id}/gecmis", tags=["API"])
+@app.get("/api/urunler/{id}/gecmis", tags=["API"])
 def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
-    """
-    Kılavuz Gün 3 (09:00-11:00 API iskeleti):
-    Belirtilen ürünün (id) kendi fiyat bilgilerini ve rakiplerdeki tüm fiyat geçmişini döndürür.
-    """
     product = db.query(Product).filter(Product.id == id).first()
     if not product:
         raise HTTPException(status_code=404, detail=f"ID={id} olan ürün bulunamadı.")
@@ -472,6 +597,7 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
     for match in matches:
         comp = competitors_by_id.get(match.competitor_id)
         comp_name = comp.ad if comp else f"Rakip #{match.competitor_id}"
+        seller_prof = get_seller_profile(product.sku, comp_name, True)
 
         snapshots = (
             db.query(PriceSnapshot)
@@ -501,7 +627,7 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
             tum_gecmis_kayitlari.append({
                 "snapshot_id": snap.id,
                 "competitor_id": match.competitor_id,
-                "rakip_adi": comp_name,
+                "rakip_adi": seller_prof["etiket"],
                 "ham_urun_adi": match.ham_urun_adi,
                 "fiyat": snap.fiyat,
                 "stokta": snap.stokta,
@@ -510,7 +636,7 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
 
         rakipler_gecmis.append({
             "competitor_id": match.competitor_id,
-            "rakip_adi": comp_name,
+            "rakip_adi": seller_prof["etiket"],
             "ham_urun_adi": match.ham_urun_adi,
             "eslesme_skoru": match.skor,
             "eslesme_durumu": match.durum,
@@ -538,13 +664,8 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
     }
 
 
-
 @app.post("/demo/fiyat-dusur", tags=["Canlı Demo Aksiyonları"])
 def post_demo_price_drop(db: Session = Depends(get_db)):
-    """
-    Canlı Demo: N11 / Pazarama kanalında Apple iPhone 15 128 GB ürününde %15 anlık rakip indirimi
-    simüle eder, kural motorunu ve yönetici raporunu yeniler ve Telegram'a anlık bildirim gönderir.
-    """
     from datetime import datetime
     from ..core.report import prepare_report_data, run_daily_report
     from ..core.notify import format_daily_notification_message, send_telegram_message
@@ -589,9 +710,6 @@ def post_demo_price_drop(db: Session = Depends(get_db)):
 
 @app.post("/demo/telegram-gonder", tags=["Canlı Demo Aksiyonları"])
 def post_demo_send_telegram(db: Session = Depends(get_db)):
-    """
-    Canlı Demo: Güncel kural motoru ve yönetici özetini anında @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderir.
-    """
     from ..core.report import get_latest_report_text, prepare_report_data
     from ..core.notify import format_daily_notification_message, send_telegram_message
 
@@ -605,9 +723,6 @@ def post_demo_send_telegram(db: Session = Depends(get_db)):
 
 @app.post("/demo/sifirla", tags=["Canlı Demo Aksiyonları"])
 def post_demo_reset(db: Session = Depends(get_db)):
-    """
-    Canlı Demo: Veritabanını, 3 onay bekleyen eşleşmeyi ve fiyatları başlangıç durumuna sıfırlar.
-    """
     db.close()
     from ..scripts.demo_reset import reset_demo_environment
     reset_demo_environment()

@@ -11,7 +11,7 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --border-color: #e2e8f0;
-            --brand-primary: #1e293b;
+            --brand-primary: #0f172a;
             --brand-accent: #2563eb;
             --red-bg: #fef2f2;
             --red-border: #fecaca;
@@ -19,6 +19,9 @@
             --green-bg: #f0fdf4;
             --green-border: #bbf7d0;
             --green-text: #15803d;
+            --amber-bg: #fffbeb;
+            --amber-border: #fde68a;
+            --amber-text: #b45309;
             --gray-bg: #f1f5f9;
             --gray-border: #cbd5e1;
             --gray-text: #475569;
@@ -40,7 +43,7 @@
         }
 
         .container {
-            max-width: 1320px;
+            max-width: 1420px;
             margin: 0 auto;
         }
 
@@ -50,7 +53,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
@@ -67,20 +70,20 @@
             color: #ffffff;
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 0.25rem 0.6rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 0.25rem;
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
 
         header h1 {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--text-main);
         }
 
         header p {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
 
@@ -95,7 +98,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.5rem 0.85rem;
+            padding: 0.48rem 0.82rem;
             border-radius: 0.375rem;
             font-size: 0.8125rem;
             font-weight: 600;
@@ -104,11 +107,17 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: all 0.15s ease;
         }
 
         .nav-link-btn:hover, .demo-action-btn:hover {
             background: var(--gray-bg);
+        }
+
+        .demo-action-btn.btn-excel {
+            background: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
         }
 
         .demo-action-btn.btn-telegram {
@@ -134,6 +143,40 @@
             border: 1px solid var(--red-border);
         }
 
+        /* Canlı Demo Test Rehberi Barı */
+        .guide-banner {
+            background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%);
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #2563eb;
+            border-radius: 0.5rem;
+            padding: 0.85rem 1.15rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .guide-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 0.2rem;
+        }
+
+        .guide-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.1rem;
+            font-size: 0.8125rem;
+            color: #1e40af;
+        }
+
+        .guide-steps span strong {
+            color: #0f172a;
+        }
+
         .toast-banner {
             display: none;
             padding: 0.85rem 1.15rem;
@@ -146,10 +189,10 @@
             border: 1px solid var(--green-border);
         }
 
-        /* 1. Üstte 3 Özet Kutusu */
+        /* 1. Üstte 4 Özet Kutusu */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin-bottom: 1.25rem;
         }
@@ -158,24 +201,28 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            padding: 1.15rem 1.25rem;
+            padding: 1.1rem 1.2rem;
         }
 
         .summary-card.card-danger {
             border-left: 4px solid var(--red-text);
         }
 
+        .summary-card.card-success {
+            border-left: 4px solid var(--green-text);
+        }
+
         .summary-label {
-            font-size: 0.8125rem;
+            font-size: 0.78rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.03em;
             color: var(--text-muted);
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.3rem;
         }
 
         .summary-value {
-            font-size: 1.85rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -184,8 +231,12 @@
             color: var(--red-text);
         }
 
+        .summary-value.text-green {
+            color: var(--green-text);
+        }
+
         .summary-value.timestamp {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             margin-top: 0.35rem;
         }
 
@@ -200,7 +251,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            padding: 1.25rem 1.5rem;
+            padding: 1.2rem 1.4rem;
             margin-bottom: 1.25rem;
         }
 
@@ -214,7 +265,7 @@
         }
 
         .report-header h2 {
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -226,13 +277,13 @@
         }
 
         .report-content {
-            font-size: 0.9375rem;
+            font-size: 0.92rem;
             color: var(--text-main);
             white-space: pre-line;
             line-height: 1.65;
         }
 
-        /* 3. Arama Kutusu ve Filtre Alanı */
+        /* 3. Arama Kutusu ve Hızlı Filtre Sekmeleri */
         .table-section {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -245,8 +296,8 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-            padding: 1rem 1.25rem;
+            gap: 0.85rem;
+            padding: 1rem 1.2rem;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-card);
         }
@@ -255,45 +306,58 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem;
             flex: 1;
         }
 
         .search-input {
-            padding: 0.5rem 0.75rem;
+            padding: 0.48rem 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 0.375rem;
-            font-size: 0.875rem;
-            min-width: 280px;
+            font-size: 0.85rem;
+            min-width: 250px;
             color: var(--text-main);
             background: #fff;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--text-muted);
+            border-color: var(--brand-accent);
         }
 
-        .filter-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
+        .filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .filter-tab {
+            padding: 0.42rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-tab:hover {
+            background: var(--gray-bg);
             color: var(--text-main);
-            cursor: pointer;
-            user-select: none;
         }
 
-        .filter-label input[type="checkbox"] {
-            width: 1rem;
-            height: 1rem;
-            cursor: pointer;
+        .filter-tab.active {
+            background: var(--brand-primary);
+            color: #ffffff;
+            border-color: var(--brand-primary);
         }
 
         .row-counter {
             font-size: 0.8125rem;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
         /* 4. Ürün Karşılaştırma Tablosu */
@@ -305,20 +369,20 @@
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
         }
 
         thead th {
             background: var(--gray-bg);
             color: var(--text-muted);
             font-weight: 600;
-            padding: 0.75rem 0.9rem;
+            padding: 0.65rem 0.65rem;
             border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
         }
 
         tbody td {
-            padding: 0.75rem 0.9rem;
+            padding: 0.65rem 0.65rem;
             border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
@@ -343,17 +407,20 @@
             font-weight: 600;
             color: var(--text-main);
             text-decoration: none;
+            font-size: 0.88rem;
         }
 
         .product-name:hover {
             text-decoration: underline;
+            color: var(--brand-accent);
         }
 
         .product-sku {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             color: var(--text-muted);
-            font-weight: 400;
+            font-weight: 500;
+            margin-top: 0.15rem;
         }
 
         .price-cell {
@@ -363,6 +430,7 @@
 
         .my-price {
             font-weight: 700;
+            font-size: 0.9rem;
         }
 
         .dip-sub {
@@ -370,6 +438,49 @@
             font-size: 0.72rem;
             color: var(--text-muted);
             font-weight: 500;
+            margin-top: 0.15rem;
+        }
+
+        .seller-price {
+            font-weight: 700;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .seller-meta {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .seller-rating {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+            padding: 0.05rem 0.32rem;
+            border-radius: 0.2rem;
+            font-size: 0.68rem;
+        }
+
+        .seller-stock-low {
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        .seller-stock-out {
+            color: #b91c1c;
+            font-weight: 700;
+        }
+
+        .cheapest-seller-tag {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.71rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: normal;
         }
 
         .diff-red {
@@ -388,9 +499,9 @@
 
         .status-badge {
             display: inline-block;
-            padding: 0.22rem 0.55rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 0.25rem;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             white-space: nowrap;
         }
@@ -399,6 +510,12 @@
             background-color: var(--red-bg);
             color: var(--red-text);
             border: 1px solid var(--red-border);
+        }
+
+        .badge-amber {
+            background-color: var(--amber-bg);
+            color: var(--amber-text);
+            border: 1px solid var(--amber-border);
         }
 
         .badge-green {
@@ -415,9 +532,13 @@
 
         .recommendation-subtext {
             display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
+            font-size: 0.73rem;
+            color: var(--text-main);
+            margin-top: 0.22rem;
+            font-weight: 500;
+            max-width: 250px;
+            white-space: normal;
+            line-height: 1.35;
         }
 
         .empty-state {
@@ -427,12 +548,12 @@
             display: none;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             body {
                 padding: 1rem 0.75rem;
             }
             .summary-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
             .toolbar {
                 flex-direction: column;
@@ -446,9 +567,6 @@
                 width: 100%;
                 min-width: 0;
             }
-            .table-wrapper {
-                -webkit-overflow-scrolling: touch;
-            }
         }
     </style>
 </head>
@@ -458,18 +576,21 @@
             <div>
                 <div class="brand-row">
                     <span class="brand-badge">CEP-HANE TEKNOLOJİ</span>
-                    <h1>Fiyat Takip ve Pazaryeri Rekabet Paneli</h1>
+                    <h1>Fiyat Takip, Satıcı Analizi ve Pazaryeri Rekabet Paneli</h1>
                 </div>
-                <p>cephaneteknoloji.com kataloğu ile PttAVM, Hepsiburada ve N11/Pazarama en ucuz rakip fiyatlarının günlük otomatik karşılaştırması</p>
+                <p>cephaneteknoloji.com kataloğu ile PttAVM, Hepsiburada ve N11/Pazarama en ucuz rakip mağazalarının günlük otomatik karşılaştırması</p>
             </div>
             <div class="header-actions">
+                <a href="/indir/onerilen-fiyatlar.xlsx" class="demo-action-btn btn-excel" title="PraPazar ve Excel uyumlu önerilen fiyat listesini indirir">
+                    📥 Önerilen Fiyatları İndir (.xlsx)
+                </a>
                 <form method="post" action="/demo/telegram-gonder" style="display:inline;">
                     <button type="submit" class="demo-action-btn btn-telegram" title="Güncel brifingi @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderir">
                         📲 Telegram'a Brifing Gönder
                     </button>
                 </form>
                 <form method="post" action="/demo/fiyat-dusur" style="display:inline;">
-                    <button type="submit" class="demo-action-btn btn-simulate" title="iPhone 15 128 GB ürününde N11/Pazarama %15 anlık rakip indirimi simüle eder">
+                    <button type="submit" class="demo-action-btn btn-simulate" title="iPhone 15 128 GB ürününde N11/TeknoMerkez %15 anlık rakip indirimi simüle eder">
                         ⚡ Rakip İndirimi Test Et (%15)
                     </button>
                 </form>
@@ -489,24 +610,41 @@
             </div>
         </header>
 
+        <!-- Serdar Bey İçin 3 Adımlık Canlı Test Rehberi -->
+        <div class="guide-banner">
+            <div>
+                <div class="guide-title">👋 Cep-Hane Teknoloji Canlı Demo — 3 Adımda Hızlı Test Rehberi</div>
+                <div class="guide-steps">
+                    <span><strong>1. Adım:</strong> Telegram'da <strong>@Cep-haneFiyatTakipBot</strong> botunu açıp <code>/start</code> yazın.</span>
+                    <span><strong>2. Adım:</strong> Üstteki <strong>"⚡ Rakip İndirimi Test Et (%15)"</strong> butonuna basın ve cep telefonunuza gelen anlık uyarısını görün.</span>
+                    <span><strong>3. Adım:</strong> Tablodaki bir ürüne tıklayarak <strong>Satıcı Kartları &amp; 14 Günlük Grafiği</strong> inceleyin veya <strong>".xlsx İndir"</strong> ile yeni fiyat listesini alın.</span>
+                </div>
+            </div>
+        </div>
+
         <div id="toastBanner" class="toast-banner"></div>
 
-        <!-- 1. Üstte 3 Özet Kutusu -->
+        <!-- 1. Üstte 4 Özet Kutusu -->
         <section class="summary-grid">
             <div class="summary-card">
                 <div class="summary-label">İzlenen Cep-Hane Ürünü</div>
                 <div class="summary-value">{{ ozet.toplam_urun }}</div>
-                <div class="summary-sub">Telefon, Tablet, Saat &amp; Aksesuar</div>
+                <div class="summary-sub">3 Pazaryeri · 36 Rakip Mağaza İlanı</div>
             </div>
             <div class="summary-card card-danger">
                 <div class="summary-label">Rakibin Ucuz Olduğu Ürün</div>
                 <div class="summary-value text-red">{{ ozet.rakibin_ucuz_oldugu_urun_sayisi }}</div>
-                <div class="summary-sub">{{ ozet.toplam_urun - ozet.rakibin_ucuz_oldugu_urun_sayisi }} üründe en ucuz satıcı Cep-Hane</div>
+                <div class="summary-sub">{{ dip_alti_sayisi }} üründe rakip Havale Dip sınırının altında</div>
+            </div>
+            <div class="summary-card card-success">
+                <div class="summary-label">En Ucuz Biziz (Marj Fırsatı)</div>
+                <div class="summary-value text-green">{{ firsat_sayisi }}</div>
+                <div class="summary-sub">1. sırayı kaybetmeden fiyat artırma fırsatı</div>
             </div>
             <div class="summary-card">
-                <div class="summary-label">Son Fiyat Kontrolü</div>
+                <div class="summary-label">Son Otomatik Tarama</div>
                 <div class="summary-value timestamp">{{ ozet.son_guncelleme_zamani }}</div>
-                <div class="summary-sub">3 Pazaryeri + cephaneteknoloji.com</div>
+                <div class="summary-sub">PttAVM · Hepsiburada · N11/Pazarama</div>
             </div>
         </section>
 
@@ -519,7 +657,7 @@
             <div class="report-content">{{ ozet.son_rapor }}</div>
         </section>
 
-        <!-- 3. Altında Ürün Tablosu (Arama Kutusu + Filtre ile) -->
+        <!-- 3. Altında Ürün Tablosu (Arama Kutusu + Hızlı Filtre Sekmeleri ile) -->
         <section class="table-section">
             <div class="toolbar">
                 <div class="toolbar-left">
@@ -527,13 +665,23 @@
                         type="text"
                         id="searchInput"
                         class="search-input"
-                        placeholder="Model adı, marka veya SKU (CPH-001) ara..."
+                        placeholder="Model adı, satıcı mağaza veya SKU ara..."
                         aria-label="Ürün adı veya SKU ara"
                     >
-                    <label class="filter-label">
-                        <input type="checkbox" id="onlyCheaperCheckbox">
-                        Sadece rakibin bizden ucuz olduğu ürünleri göster
-                    </label>
+                    <div class="filter-tabs" id="filterTabs">
+                        <button type="button" class="filter-tab active" data-filter="all">
+                            Tümü ({{ urunler|length }})
+                        </button>
+                        <button type="button" class="filter-tab" data-filter="cheaper">
+                            🔴 Rakip Bizden Ucuz ({{ ozet.rakibin_ucuz_oldugu_urun_sayisi }})
+                        </button>
+                        <button type="button" class="filter-tab" data-filter="dip">
+                            ⚠️ Dip Sınır Altı ({{ dip_alti_sayisi }})
+                        </button>
+                        <button type="button" class="filter-tab" data-filter="opportunity">
+                            🟢 En Ucuz Biziz / Fırsat ({{ firsat_sayisi }})
+                        </button>
+                    </div>
                 </div>
                 <div class="row-counter" id="rowCounter">
                     Toplam {{ urunler|length }} ürün gösteriliyor
@@ -546,10 +694,10 @@
                         <tr>
                             <th>Ürün Adı (Detay &amp; 14 Günlük Grafik)</th>
                             <th>Cep-Hane Fiyatı</th>
-                            <th>PttAVM (En Ucuz)</th>
-                            <th>Hepsiburada (En Ucuz)</th>
-                            <th>N11 / Pazarama (En Ucuz)</th>
-                            <th>En Ucuz Rakiple Fark</th>
+                            <th>PttAVM (En Ucuz Satıcı)</th>
+                            <th>Hepsiburada (En Ucuz Satıcı)</th>
+                            <th>N11 / Pazarama (En Ucuz Satıcı)</th>
+                            <th>En Ucuz Rakip &amp; Fark</th>
                             <th>Durum &amp; Satın Alma Önerisi</th>
                         </tr>
                     </thead>
@@ -557,40 +705,75 @@
                         {% for u in urunler %}
                         {% set is_cheaper = (u.durum == "RAKİP UCUZ") %}
                         {% set is_expensive = (u.durum == "BİZ UCUZUZ") %}
+                        {% set is_dip = u.dip_alti %}
                         <tr
                             class="product-row {% if is_cheaper %}row-red{% elif is_expensive %}row-green{% else %}row-gray{% endif %}"
-                            data-name="{{ u.urun_adi|lower }} {{ u.sku|lower }}"
+                            data-name="{{ u.urun_adi|lower }} {{ u.sku|lower }} {{ u.rakip_a_detay.satici|lower if u.rakip_a_detay else '' }} {{ u.rakip_b_detay.satici|lower if u.rakip_b_detay else '' }} {{ u.rakip_c_detay.satici|lower if u.rakip_c_detay else '' }}"
                             data-cheaper="{{ 'true' if is_cheaper else 'false' }}"
+                            data-dip="{{ 'true' if is_dip else 'false' }}"
+                            data-opportunity="{{ 'true' if is_expensive else 'false' }}"
                         >
                             <td>
                                 <a href="/urun/{{ u.id }}" class="product-name">{{ u.urun_adi }}</a>
-                                <span class="product-sku">SKU: {{ u.sku }}</span>
+                                <span class="product-sku">SKU: {{ u.sku }} · Grafiği ve Satıcıları Gör →</span>
                             </td>
                             <td class="price-cell my-price">
-                                {{ "%.2f"|format(u.benim_fiyatim) }} TL
-                                <span class="dip-sub">Havale Dip: {{ "%.2f"|format(u.min_kabul_edilebilir_fiyat) }} TL</span>
+                                {{ u.benim_fiyatim|tr_fiyat }} TL
+                                <span class="dip-sub">Havale Dip: {{ u.min_kabul_edilebilir_fiyat|tr_fiyat }} TL</span>
                             </td>
                             <td class="price-cell">
-                                {% if u.rakip_a is not none %}{{ "%.2f"|format(u.rakip_a) }} TL{% else %}<span style="color:var(--text-muted)">Onay Bekliyor</span>{% endif %}
+                                {% if u.rakip_a_detay %}
+                                    <span class="seller-price">{{ u.rakip_a_detay.fiyat|tr_fiyat }} TL</span>
+                                    <span class="seller-meta">
+                                        🏪 <strong>{{ u.rakip_a_detay.satici }}</strong>
+                                        <span class="seller-rating">★ {{ u.rakip_a_detay.puan }}</span>
+                                        · <span class="{% if 'Son' in u.rakip_a_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_a_detay.stok_notu }}</span>
+                                    </span>
+                                {% else %}
+                                    <a href="/eslesmeler" style="color:#b45309;font-weight:600;font-size:0.78rem;text-decoration:underline;">⏳ Eşleşme Onayı Bekliyor</a>
+                                {% endif %}
                             </td>
                             <td class="price-cell">
-                                {% if u.rakip_b is not none %}{{ "%.2f"|format(u.rakip_b) }} TL{% else %}-{% endif %}
+                                {% if u.rakip_b_detay %}
+                                    <span class="seller-price">{{ u.rakip_b_detay.fiyat|tr_fiyat }} TL</span>
+                                    <span class="seller-meta">
+                                        🏪 <strong>{{ u.rakip_b_detay.satici }}</strong>
+                                        <span class="seller-rating">★ {{ u.rakip_b_detay.puan }}</span>
+                                        · <span class="{% if 'Son' in u.rakip_b_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_b_detay.stok_notu }}</span>
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td class="price-cell">
-                                {% if u.rakip_c is not none %}{{ "%.2f"|format(u.rakip_c) }} TL{% else %}-{% endif %}
+                                {% if u.rakip_c_detay %}
+                                    <span class="seller-price">{{ u.rakip_c_detay.fiyat|tr_fiyat }} TL</span>
+                                    <span class="seller-meta">
+                                        🏪 <strong>{{ u.rakip_c_detay.satici }}</strong>
+                                        <span class="seller-rating">★ {{ u.rakip_c_detay.puan }}</span>
+                                        · <span class="{% if not u.rakip_c_detay.stokta %}seller-stock-out{% elif 'Son' in u.rakip_c_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_c_detay.stok_notu }}</span>
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td class="price-cell {% if is_cheaper %}diff-red{% elif is_expensive %}diff-green{% else %}diff-gray{% endif %}">
                                 {% if u.fark is not none %}
-                                    {{ "%+.2f"|format(u.fark) }} TL ({{ "%+.1f"|format(u.fark_yuzde) }}%)
+                                    {{ u.fark|tr_fark }} TL ({{ "%+.1f"|format(u.fark_yuzde) }}%)
+                                    {% if u.en_ucuz_rakip_detay %}
+                                        <span class="cheapest-seller-tag">En Ucuz: {{ u.en_ucuz_rakip_detay.kanal }} / {{ u.en_ucuz_rakip_detay.satici }}</span>
+                                    {% endif %}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td>
-                                {% if is_cheaper %}
+                                {% if is_dip %}
+                                    <span class="status-badge badge-amber">⚠️ DİP SINIR ALTI RİSK</span>
+                                {% elif is_cheaper %}
                                     <span class="status-badge badge-red">RAKİP UCUZ</span>
                                 {% elif is_expensive %}
-                                    <span class="status-badge badge-green">EN UCUZ BİZİZ</span>
+                                    <span class="status-badge badge-green">👑 EN UCUZ BİZİZ</span>
                                 {% else %}
                                     <span class="status-badge badge-gray">{{ u.durum }}</span>
                                 {% endif %}
@@ -612,38 +795,43 @@
     <script>
         (function () {
             const searchInput = document.getElementById("searchInput");
-            const onlyCheaperCheckbox = document.getElementById("onlyCheaperCheckbox");
+            const filterButtons = Array.from(document.querySelectorAll(".filter-tab"));
             const rows = Array.from(document.querySelectorAll(".product-row"));
             const rowCounter = document.getElementById("rowCounter");
             const emptyState = document.getElementById("emptyState");
             const toastBanner = document.getElementById("toastBanner");
+            let currentFilter = "all";
 
             const params = new URLSearchParams(window.location.search);
             const bildirim = params.get("bildirim");
             if (bildirim && toastBanner) {
                 toastBanner.style.display = "block";
                 if (bildirim === "telegram_gonderildi") {
-                    toastBanner.textContent = "✓ Günlük yönetici özeti ve kritik fiyat uyarıları @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderildi!";
+                    toastBanner.textContent = "✓ Günlük yönetici özeti ve satıcı bazlı kritik fiyat uyarıları @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderildi!";
                 } else if (bildirim === "indirim_simule_edildi") {
-                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11/Pazarama %15 rakip indirimi simüle edildi, rapor güncellendi ve Telegram'a acil uyarı geçildi!";
+                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (★9.4) mağazasında %15 indirim simüle edildi, tablo güncellendi ve Telegram'a acil uyarı geçildi!";
                 } else if (bildirim === "demo_sifirlandi") {
-                    toastBanner.textContent = "🔄 Demo veritabanı, pazaryeri fiyatları ve 3 onay bekleyen eşleşme başlangıç durumuna sıfırlandı.";
+                    toastBanner.textContent = "🔄 Demo veritabanı, pazaryeri satıcı fiyatları ve 3 onay bekleyen eşleşme başlangıç durumuna sıfırlandı.";
                 }
             }
 
             function applyFilters() {
                 const query = searchInput.value.trim().toLowerCase();
-                const onlyCheaper = onlyCheaperCheckbox.checked;
                 let visibleCount = 0;
 
                 rows.forEach(function (row) {
                     const nameAndSku = row.getAttribute("data-name") || "";
                     const isCheaper = row.getAttribute("data-cheaper") === "true";
+                    const isDip = row.getAttribute("data-dip") === "true";
+                    const isOpp = row.getAttribute("data-opportunity") === "true";
 
                     const matchesSearch = !query || nameAndSku.indexOf(query) !== -1;
-                    const matchesCheaper = !onlyCheaper || isCheaper;
+                    let matchesTab = true;
+                    if (currentFilter === "cheaper") matchesTab = isCheaper;
+                    else if (currentFilter === "dip") matchesTab = isDip;
+                    else if (currentFilter === "opportunity") matchesTab = isOpp;
 
-                    if (matchesSearch && matchesCheaper) {
+                    if (matchesSearch && matchesTab) {
                         row.style.display = "";
                         visibleCount += 1;
                     } else {
@@ -655,8 +843,16 @@
                 emptyState.style.display = visibleCount === 0 ? "block" : "none";
             }
 
+            filterButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    filterButtons.forEach(function (b) { b.classList.remove("active"); });
+                    btn.classList.add("active");
+                    currentFilter = btn.getAttribute("data-filter") || "all";
+                    applyFilters();
+                });
+            });
+
             searchInput.addEventListener("input", applyFilters);
-            onlyCheaperCheckbox.addEventListener("change", applyFilters);
         })();
     </script>
 </body>
