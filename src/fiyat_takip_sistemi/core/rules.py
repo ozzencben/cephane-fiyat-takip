@@ -122,7 +122,7 @@ def evaluate_rules(db: Session) -> List[Alert]:
             price_drop = prev_snap.fiyat - latest_snap.fiyat
             drop_pct = (price_drop / prev_snap.fiyat) * 100.0
 
-            if drop_pct >= 5.0:
+            if drop_pct >= 2.0 or price_drop >= 1000.0:
                 alerts.append(
                     Alert(
                         rule_type=RuleType.FIYAT_DUSTU,

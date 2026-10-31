@@ -687,8 +687,9 @@ def post_demo_price_drop(db: Session = Depends(get_db)):
             .order_by(desc(PriceSnapshot.cekilme_zamani), desc(PriceSnapshot.id))
             .first()
         )
-        old_price = latest.fiyat if latest else 59600.0
-        new_price = round(old_price * 0.85, 2)
+        old_price = latest.fiyat if latest else 58750.0
+        # Gerçekçi elektronik kampanya indirimi: 58.750 TL -> 57.490 TL (-1.260 TL, Havale dip sınırı 58.000 TL'nin altına sarkma senaryosu)
+        new_price = 57490.0 if old_price > 57500.0 else round(old_price - 500.0, 2)
         snap = PriceSnapshot(
             competitor_id=comp_c.id,
             ham_urun_adi=target_name,

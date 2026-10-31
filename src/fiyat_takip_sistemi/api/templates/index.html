@@ -637,7 +637,145 @@
             font-weight: 600;
         }
 
+
+        /* Kurumsal Koyu Lacivert Üst Bar (Enterprise Topbar) */
+        .enterprise-topbar {
+            background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            margin: -1.5rem -1.25rem 1.5rem -1.25rem;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .enterprise-topbar-inner {
+            max-width: 1420px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+
+        .topbar-brand-pill {
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 0.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+        }
+
+        .dot-live {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        /* Tam Sürüm Yol Haritası & Farkımız Bölümü */
+        .roadmap-section {
+            margin-top: 1.75rem;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            border-radius: 0.75rem;
+            padding: 1.6rem 1.75rem;
+            border: 1px solid #334155;
+        }
+
+        .roadmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .roadmap-header h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .roadmap-header p {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+        }
+
+        .roadmap-tag {
+            background: rgba(37, 99, 235, 0.25);
+            border: 1px solid #60a5fa;
+            color: #93c5fd;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.75rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .roadmap-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.1rem;
+        }
+
+        .roadmap-card h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.45rem;
+        }
+
+        .roadmap-card p {
+            font-size: 0.79rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
         @media (max-width: 900px) {
+            .roadmap-grid { grid-template-columns: 1fr; }
             body {
                 padding: 1rem 0.75rem;
             }
@@ -660,6 +798,19 @@
     </style>
 </head>
 <body>
+    <div class="enterprise-topbar">
+        <div class="enterprise-topbar-inner">
+            <div class="topbar-left">
+                <span class="topbar-brand-pill">ÖZEL DEMO ORTAMI</span>
+                <span><strong>Cep-Hane Teknoloji</strong> (cephaneteknoloji.com) için özelleştirilmiş Satın Alma &amp; Rekabet Karar Destek Sistemi</span>
+            </div>
+            <div class="topbar-right">
+                <span class="status-pill"><span class="dot-live"></span> Canlı Pazaryeri Motoru Aktif</span>
+                <span class="status-pill">📦 Katalog Tespiti: 210 Ürün (Demoda 12 Seçili Model)</span>
+                <span class="status-pill">📲 Telegram: @Cep-haneFiyatTakipBot</span>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <header>
             <div>
@@ -680,7 +831,7 @@
                 </form>
                 <form method="post" action="/demo/fiyat-dusur" style="display:inline;">
                     <button type="submit" class="demo-action-btn btn-simulate" title="iPhone 15 128 GB ürününde N11/TeknoMerkez %15 anlık rakip indirimi simüle eder">
-                        ⚡ Rakip İndirimi Test Et (%15)
+                        ⚡ Rakip İndirimi Simüle Et (-1.260 TL)
                     </button>
                 </form>
                 <form method="post" action="/demo/sifirla" style="display:inline;">
@@ -705,7 +856,7 @@
                 <div class="guide-title">👋 Cep-Hane Teknoloji Canlı Demo — 3 Adımda Hızlı Test Rehberi</div>
                 <div class="guide-steps">
                     <span><strong>1. Adım:</strong> Telegram'da <strong>@Cep-haneFiyatTakipBot</strong> botunu açıp <code>/start</code> yazın.</span>
-                    <span><strong>2. Adım:</strong> Üstteki <strong>"⚡ Rakip İndirimi Test Et (%15)"</strong> butonuna basın ve cep telefonunuza gelen anlık uyarısını görün.</span>
+                    <span><strong>2. Adım:</strong> Üstteki <strong>"⚡ Rakip İndirimi Simüle Et (-1.260 TL)"</strong> butonuna basın ve cep telefonunuza gelen anlık uyarısını görün.</span>
                     <span><strong>3. Adım:</strong> Tablodaki bir ürüne tıklayarak <strong>Satıcı Kartları &amp; 14 Günlük Grafiği</strong> inceleyin veya <strong>".xlsx İndir"</strong> ile yeni fiyat listesini alın.</span>
                 </div>
             </div>
@@ -716,9 +867,9 @@
         <!-- 1. Üstte 4 Özet Kutusu -->
         <section class="summary-grid">
             <div class="summary-card">
-                <div class="summary-label">İzlenen Cep-Hane Ürünü</div>
-                <div class="summary-value">{{ ozet.toplam_urun }}</div>
-                <div class="summary-sub">3 Pazaryeri · 36 Rakip Mağaza İlanı</div>
+                <div class="summary-label">Aktif Demo / Toplam Katalog</div>
+                <div class="summary-value">{{ ozet.toplam_urun }} <span style="font-size:1.05rem;color:var(--text-muted);font-weight:600;">/ 210 Ürün</span></div>
+                <div class="summary-sub">cephaneteknoloji.com'da 210 ürün tespit edildi</div>
             </div>
             <div class="summary-card card-danger">
                 <div class="summary-label">Rakibin Ucuz Olduğu Ürün</div>
@@ -879,6 +1030,36 @@
                 </div>
             </div>
         </section>
+
+        <!-- 4. Tam Sürüm Kapasitesi ve Hazır Sistemlerden Farkımız -->
+        <section class="roadmap-section">
+            <div class="roadmap-header">
+                <div>
+                    <h2>🚀 Cep-Hane Teknoloji Tam Sürüm (Canlı Kurulum) Kapasitesi &amp; Terzi İşi Avantajlarımız</h2>
+                    <p>Bu ekran, sistemin çalışma mantığını hemen test edebilmeniz için <strong>cephaneteknoloji.com</strong> kataloğunuzdaki 12 popüler modelle hazırlanmış canlı demo ortamıdır. Tam sürüm kurulumunda devreye girecek modüller:</p>
+                </div>
+                <span class="roadmap-tag">Tam Sürüm Yol Haritası</span>
+            </div>
+            <div class="roadmap-grid">
+                <div class="roadmap-card">
+                    <h3>📦 210 Ürünün Tamamı &amp; Çoklu Kanal</h3>
+                    <p>Sitenizdeki 7 kategoride yer alan <strong>210 ürünün tamamı</strong> (veya istediğiniz özel Excel/ERP listesi) Akakçe, Cimri, PttAVM, Hepsiburada, N11, Trendyol, Amazon ve Pazarama'da en ucuz satıcı mağaza adıyla birlikte otomatik taranır.</p>
+                </div>
+                <div class="roadmap-card">
+                    <h3>🛡️ Havale Dip Sınırı Marj Koruması</h3>
+                    <p>Hazır fiyat takip paketleri rastgele "rakibin 1 TL altına in" diyerek kârlılığı eritir. Bu sistem Cep-Hane'nin <strong>Kredi Kartı Liste vs. Havale/Toptan Dip</strong> yapısını bilir; rakip dip sınırın altına indiğinde zararına satışı durdurur.</p>
+                </div>
+                <div class="roadmap-card">
+                    <h3>🔄 PraPazar &amp; Komisyon Hesabı</h3>
+                    <p>Her pazaryerinin komisyon oranı ve kargo maliyeti ayrı tanımlanır. Önerilen yeni fiyatlar tek tıkla <strong>PraPazar toplu fiyat güncelleme şablonuna</strong> uygun Excel olarak indirilir veya doğrudan entegre edilir.</p>
+                </div>
+                <div class="roadmap-card">
+                    <h3>📲 Panele Girmeden Sabah Özeti</h3>
+                    <p>Her gün yüzlerce ürünü tabloda tek tek aramak yerine, her sabah <strong>08:30'da</strong> cep telefonunuza (Telegram'a) hangi üründe fiyat düşürüleceği ve hangi üründe kâr marjı artırılabileceği hazır özet olarak gelir.</p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
 
@@ -911,7 +1092,7 @@
                 if (bildirim === "telegram_gonderildi") {
                     toastBanner.textContent = "✓ Günlük yönetici özeti ve satıcı bazlı kritik fiyat uyarıları @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderildi!";
                 } else if (bildirim === "indirim_simule_edildi") {
-                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (★9.4) mağazasında %15 indirim simüle edildi, tablo güncellendi ve Telegram'a acil uyarı geçildi!";
+                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (★9.4) fiyatı 58.750 TL'den 57.490 TL'ye (-1.260 TL) çekildi! Rakip Havale Dip sınırınızın (58.000 TL) altına indiği için 'DİP SINIR ALTI RİSK' koruması devreye girdi ve Telegram'a acil uyarı gönderildi!";
                 } else if (bildirim === "demo_sifirlandi") {
                     toastBanner.textContent = "🔄 Demo veritabanı, pazaryeri satıcı fiyatları ve 3 onay bekleyen eşleşme başlangıç durumuna sıfırlandı.";
                 }
@@ -965,7 +1146,7 @@
             const scenarios = {
                 "/demo/fiyat-dusur": {
                     title: "⚡ Canlı Rakip İndirimi Simüle Ediliyor...",
-                    sub: "Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (%15 indirim) işleniyor:",
+                    sub: "Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (58.750 TL ➔ 57.490 TL) Havale dip sınır altı senaryosu işleniyor:",
                     steps: [
                         "🔍 1/4 — N11 / TeknoMerkez mağazasındaki yeni fiyat veritabanına kaydediliyor...",
                         "🧮 2/4 — Havale Dip Sınırı (58.000 TL) ve marj kuralları hesaplanıyor...",
