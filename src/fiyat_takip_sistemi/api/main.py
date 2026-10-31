@@ -111,21 +111,32 @@ def _build_product_comparison_item(
 
         if min_comp_price < product.fiyat:
             durum = "RAKİP UCUZ"
-            candidate_price = round(min_comp_price * 0.99, 2)
-            onerilen_fiyat = candidate_price
-            if candidate_price < min_allowed_price:
+            if min_comp_price <= min_allowed_price:
+                candidate_price = round(min_comp_price * 0.99, 2)
+                onerilen_fiyat = candidate_price
                 oneri_notu = (
                     f"Marjı bozmadan rekabet edemezsin "
-                    f"(Önerilen: {candidate_price:.2f} TL < Min Fiyat: {min_allowed_price:.2f} TL)"
+                    f"(Rakip: {min_comp_price:.2f} TL ≤ Havale Dip: {min_allowed_price:.2f} TL)"
                 )
             else:
+                raw_cand = round(min_comp_price * 0.99, 2)
+                candidate_price = raw_cand if raw_cand >= min_allowed_price else min_allowed_price
+                onerilen_fiyat = candidate_price
                 safe_margin = ((candidate_price - product.maliyet) / product.maliyet) * 100.0
                 oneri_notu = (
-                    f"Önerilen Fiyat: {candidate_price:.2f} TL (%{safe_margin:.1f} marj korunur)"
+                    f"Önerilen: {candidate_price:.2f} TL (Havale Dip: {min_allowed_price:.2f} TL, %{safe_margin:.1f} marj korunur)"
                 )
         elif min_comp_price > product.fiyat:
             durum = "BİZ UCUZUZ"
-            oneri_notu = "Fiyat avantajı bizde; mevcut fiyat korunabilir."
+            target_fiyat = round(min_comp_price * 0.995, 2)
+            if target_fiyat > product.fiyat:
+                ek_kar = round(target_fiyat - product.fiyat, 2)
+                onerilen_fiyat = target_fiyat
+                oneri_notu = (
+                    f"FIRSAT: 1. sırayı kaybetmeden {target_fiyat:.2f} TL'ye çekilebilir (+{ek_kar:.2f} TL ek marj)"
+                )
+            else:
+                oneri_notu = "Fiyat avantajı bizde; mevcut liste fiyatı korunabilir."
         else:
             durum = "EŞİT"
             oneri_notu = "Rakip ile fiyat eşit."

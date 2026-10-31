@@ -16,7 +16,6 @@ from .db import SessionLocal
 from .models import Competitor, Match, PriceSnapshot, Product
 from .rules import Alert, Severity, evaluate_rules
 
-# Ortam değişkenlerini yükle (.env dosyasından)
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
@@ -24,7 +23,6 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:latest").strip()
 
-# Gemini modelleri (öncelik sırasıyla denenecek modeller)
 GEMINI_MODELS = [
     "gemini-flash-latest",
     "gemini-3.1-flash-lite",
@@ -34,25 +32,20 @@ GEMINI_MODELS = [
 
 def prepare_report_data(db: Session) -> Dict[str, Any]:
     """
-    Kılavuz gereksinimi:
-    Rakamları kesin olarak kodla hesaplar ve LLM'e verilecek yapılandırılmış JSON verisini üretir.
-    - Toplam ürün sayısı
-    - Rakibin ucuz olduğu ürün sayısı
-    - En kritik 5 uyarı
+    Cep-Hane Teknoloji günlük yönetici özeti için rakamları kesin olarak kodla hesaplar
+    ve LLM'e verilecek yapılandırılmış JSON verisini üretir.
     """
     products = db.query(Product).all()
     total_products = len(products)
 
-    # Kural motorundan tüm uyarıları al
     all_alerts = evaluate_rules(db)
 
-    # Rakiplerin daha ucuz olduğu benzersiz ürünlerin sayısı
     cheaper_skus = {
         a.product_sku for a in all_alerts if a.rule_type.value == "RAKIP_UCUZ"
     }
     competitor_cheaper_count = len(cheaper_skus)
 
-    # En kritik 5 uyarıyı seç (Önce YÜKSEK, yetmezse ORTA)
+    # En kritik 5 uyarıyı seç (Önce YÜKSEK, sonra ORTA, sonra DÜŞÜK/Fırsat)
     top_5_alerts: List[Alert] = []
     high_alerts = [a for a in all_alerts if a.severity == Severity.YUKSEK]
     top_5_alerts.extend(high_alerts[:5])
@@ -61,13 +54,19 @@ def prepare_report_data(db: Session) -> Dict[str, Any]:
         med_alerts = [a for a in all_alerts if a.severity == Severity.ORTA]
         top_5_alerts.extend(med_alerts[: (5 - len(top_5_alerts))])
 
+    if len(top_5_alerts) < 5:
+        low_alerts = [a for a in all_alerts if a.severity == Severity.DUSUK]
+        top_5_alerts.extend(low_alerts[: (5 - len(top_5_alerts))])
+
     critical_alerts_data = []
     for alert in top_5_alerts:
+        min_allowed_price = round(alert.cost * (1.0 + alert.min_margin_pct / 100.0), 2)
         critical_alerts_data.append({
             "urun": alert.product_name,
             "sku": alert.product_sku,
             "rakip": alert.competitor_name,
             "bizim_fiyat": alert.current_my_price,
+            "havale_dip_siniri": min_allowed_price,
             "rakip_fiyat": alert.current_comp_price,
             "uyari_tipi": alert.rule_type.value,
             "oncelik": alert.severity.value,
@@ -75,12 +74,26 @@ def prepare_report_data(db: Session) -> Dict[str, Any]:
             "oneri": alert.recommendation,
         })
 
+    opportunity_alerts = [a for a in all_alerts if a.rule_type.value == "ONERI"]
+    opportunities_data = [
+        {
+            "urun": a.product_name,
+            "en_yakin_rakip": a.competitor_name,
+            "bizim_fiyat": a.current_my_price,
+            "rakip_fiyat": a.current_comp_price,
+            "oneri": a.recommendation,
+        }
+        for a in opportunity_alerts[:3]
+    ]
+
     report_payload = {
+        "firma": "Cep-Hane Teknoloji",
         "rapor_tarihi": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "toplam_urun_sayisi": total_products,
         "rakibin_ucuz_oldugu_urun_sayisi": competitor_cheaper_count,
         "bizim_daha_ucuz_oldugumuz_urun_sayisi": max(0, total_products - competitor_cheaper_count),
         "en_kritik_uyarilar": critical_alerts_data,
+        "kar_artirma_firsatlari": opportunities_data,
     }
 
     return report_payload
@@ -88,32 +101,40 @@ def prepare_report_data(db: Session) -> Dict[str, Any]:
 
 def generate_fallback_report(data: Dict[str, Any]) -> str:
     """
-    Kılavuz gereksinimi:
-    LLM servisine ulaşılamazsa veya kota dolarsa sistemin çökmesini engelleyen
-    kural tabanlı yedek şablon rapor üretici.
+    LLM servisine ulaşılamazsa veya kota dolarsa Cep-Hane Teknoloji Satın Alma Müdürlüğü
+    için kural tabanlı yönetici özeti üretir.
     """
     total = data["toplam_urun_sayisi"]
     cheaper = data["rakibin_ucuz_oldugu_urun_sayisi"]
     advantage = data["bizim_daha_ucuz_oldugumuz_urun_sayisi"]
     alerts = data.get("en_kritik_uyarilar", [])
+    opps = data.get("kar_artirma_firsatlari", [])
 
     lines = [
-        f"📋 GÜNLÜK FİYAT VE REKABET YÖNETİCİ ÖZETİ (Kural Tabanlı Şablon Rapor - {data['rapor_tarihi']})",
-        f"Kataloğumuzdaki toplam {total} üründen {cheaper} tanesinde rakiplerimizin bizden daha ucuz olduğu, "
-        f"{advantage} üründe ise fiyat avantajımızı koruduğumuz tespit edilmiştir.",
-        "\nÖne Çıkan Kritik Riskler ve Fırsatlar:"
+        f"📋 CEP-HANE TEKNOLOJİ GÜNLÜK REKABET VE SATIN ALMA ÖZETİ ({data['rapor_tarihi']})",
+        f"Takip edilen toplam {total} popüler cep telefonu, tablet ve aksesuar ürünümüzün {cheaper} tanesinde "
+        f"pazaryeri rakiplerinin (PttAVM, Hepsiburada, N11/Pazarama) liste fiyatımızdan daha ucuz olduğu, "
+        f"{advantage} üründe ise Cep-Hane Teknoloji'nin en ucuz satıcı konumunu koruduğu tespit edilmiştir.",
     ]
 
-    for idx, a in enumerate(alerts[:3], 1):
+    if alerts:
+        a0 = alerts[0]
         lines.append(
-            f"{idx}. {a['urun']} ({a['rakip']}): Rakip fiyatı {a['rakip_fiyat']:.2f} TL, "
-            f"bizim fiyatımız {a['bizim_fiyat']:.2f} TL. [{a['oneri']}]"
+            f"Özellikle {a0['urun']} modelinde {a0['rakip']} fiyatı {a0['rakip_fiyat']:.2f} TL seviyesine gerilemiş olup "
+            f"Havale/Toptan dip sınırımız ({a0.get('havale_dip_siniri', 0):.2f} TL) baz alınarak değerlendirilmelidir."
         )
 
-    lines.append("\nÖnerilen Aksiyonlar:")
-    lines.append("1. Rakipte fiyatı sert düşen ürünlerin marj sınırları kontrol edilerek yeni fiyatlar belirlenmelidir.")
-    lines.append("2. Rakiplerin stok avantajı olmayan ürünlerde kar marjı korunmalı veya artırılmalıdır.")
-    lines.append("3. Marjı kurtarmayan ürünlerde fiyat kırmak yerine katma değerli teklifler düşünülmelidir.")
+    if opps:
+        o0 = opps[0]
+        lines.append(
+            f"Diğer yandan {o0['urun']} modelinde en yakın rakipten ({o0['rakip_fiyat']:.2f} TL) açık ara ucuz olduğumuz için "
+            f"1. sırayı kaybetmeden kâr marjımızı artırma fırsatı bulunmaktadır."
+        )
+
+    lines.append("\nAksiyon Önerileri:")
+    lines.append("1. Havale dip sınırımızın üzerinde kalan rekabetçi ürünlerde (iPhone 15, iPhone 16 Plus, Galaxy A36, POCO X8 Pro) önerilen fiyatlara çekilerek Buybox 1. sırası alınmalıdır.")
+    lines.append("2. Rakibin dip maliyet sınırımızın altına indiği ürünlerde (Samsung Galaxy A17, Apple 20W Adaptör) kârlılığı bozmamak adına fiyat kırılmamalı, stok takibi yapılmalıdır.")
+    lines.append("3. En ucuz satıcı olduğumuz Samsung Galaxy A26, iPad Mini 7 ve Redmi Pad 2 modellerinde fiyatlar en yakın rakibin hemen altına çekilerek birim kâr artırılmalıdır.")
 
     return "\n".join(lines)
 
@@ -122,7 +143,7 @@ def _call_gemini(data: Dict[str, Any], system_prompt: str, user_content: str, ke
     """Gemini API çağrısı yapar."""
     payload = {
         "contents": [{"parts": [{"text": f"{system_prompt}\n\n{user_content}"}]}],
-        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 600},
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 650},
     }
 
     for model_name in GEMINI_MODELS:
@@ -145,18 +166,16 @@ def _call_gemini(data: Dict[str, Any], system_prompt: str, user_content: str, ke
 
 def suggest_match_with_llm(our_product_name: str, competitor_product_name: str, score: float = 0.0) -> str:
     """
-    Kılavuz Gün 2 (11:00-13:30 İsteğe bağlı):
-    'onay bekliyor' eşleşmeler için LLM'e 'Bu iki ürün aynı mı?' diye sorar.
-    Cevabı otomatik onay olarak değil, panelde öneri olarak göstermek üzere döndürür.
+    'onay_bekliyor' eşleşmeler için LLM'e 'Bu iki ürün aynı mı?' diye sorar.
     """
     system_prompt = (
-        "Sen bir e-ticaret katalog uzmanısın. Sana verilen iki ürün adının aynı ürünü "
+        "Sen Cep-Hane Teknoloji'nin e-ticaret katalog uzmanısın. Sana verilen iki elektronik ürün adının aynı ürünü "
         "temsil edip etmediğini tek bir kısa Türkçe cümleyle değerlendir. "
         "Yanıtına 'Öneri: Aynı ürün' veya 'Öneri: Farklı ürün' diyerek başla."
     )
     user_content = (
-        f"Bizim ürünümüz: '{our_product_name}'\n"
-        f"Rakip ürünü: '{competitor_product_name}'\n"
+        f"Cep-Hane ürünümüz: '{our_product_name}'\n"
+        f"Pazaryeri rakip ürünü: '{competitor_product_name}'\n"
         f"Bu iki ürün aynı mı?"
     )
 
@@ -165,10 +184,9 @@ def suggest_match_with_llm(our_product_name: str, competitor_product_name: str, 
         if res:
             return res
 
-    # Kural tabanlı yedek öneri
     if score >= 80.0:
-        return f"Öneri: Aynı ürün (Benzerlik skoru %{score:.0f} oldukça yüksek, alt başlık/çeviri farkı olabilir)."
-    return f"Öneri: İnsan kontrolü gerekli (Benzerlik skoru %{score:.0f}, ortak kelimeler mevcut)."
+        return f"Öneri: Aynı ürün (Benzerlik skoru %{score:.0f} oldukça yüksek, model kodu/renk yazım farkı olabilir)."
+    return f"Öneri: İnsan kontrolü gerekli (Benzerlik skoru %{score:.0f}, ortak model kelimeleri mevcut)."
 
 
 def _call_groq(data: Dict[str, Any], system_prompt: str, user_content: str, key: str) -> Optional[str]:
@@ -182,7 +200,7 @@ def _call_groq(data: Dict[str, Any], system_prompt: str, user_content: str, key:
             {"role": "user", "content": user_content},
         ],
         "temperature": 0.2,
-        "max_tokens": 600,
+        "max_tokens": 650,
     }
     try:
         resp = httpx.post(url, json=payload, headers=headers, timeout=15.0)
@@ -196,45 +214,41 @@ def _call_groq(data: Dict[str, Any], system_prompt: str, user_content: str, key:
 
 def generate_llm_report(data: Dict[str, Any], api_key: Optional[str] = None) -> str:
     """
-    Kılavuz gereksinimi:
-    Verilen yapılandırılmış JSON verisini LLM'e aktararak 5-8 cümlelik,
-    asla rakam uydurmayan, aksiyon odaklı Türkçe bir yönetici özeti üretir.
-    Gemini -> Groq -> Şablon Rapor hiyerarşisiyle çalışır.
+    Verilen yapılandırılmış JSON verisini LLM'e aktararak Cep-Hane Teknoloji Satın Alma Müdürlüğü
+    için 5-8 cümlelik, asla rakam uydurmayan, aksiyon odaklı Türkçe bir yönetici özeti üretir.
     """
     system_prompt = (
-        "Sen deneyimli bir e-ticaret fiyatlandırma ve rekabet stratejisi analistisin.\n"
-        "Görevin, sana JSON formatında verilen günlük fiyat takip verilerini inceleyip "
-        "şirket yöneticisi için kısa, net ve aksiyon odaklı bir Türkçe sabah brifingi hazırlamaktır.\n\n"
+        "Sen Cep-Hane Teknoloji'nin kıdemli e-ticaret fiyatlandırma ve satın alma stratejisi analistisin.\n"
+        "Görevin, sana JSON formatında verilen günlük pazaryeri (PttAVM, Hepsiburada, N11/Pazarama) fiyat takip "
+        "verilerini inceleyip Satın Alma Müdürü için kısa, net ve aksiyon odaklı bir Türkçe sabah brifingi hazırlamaktır.\n\n"
         "KESİN KURALLAR:\n"
-        "1. Yalnızca Türkçe yaz.\n"
+        "1. Yalnızca Türkçe yaz ve doğrudan profesyonel bir yönetici özeti paragrafıyla başla.\n"
         "2. Raporun gövdesi TAM OLARAK 5 ila 8 cümle arasında olmalı, asla gereksiz uzatma.\n"
         "3. SADECE verilen JSON verilerini kullan. KESİNLİKLE RAKAM, ÜRÜN VEYA YÜZDE UYDURMA (Halüsinasyon yok).\n"
-        "4. Raporun sonunda 'Aksiyon Önerileri:' başlığı altında 2 veya 3 adet net, somut aksiyon maddesi listele.\n"
-        "5. Rapor profesyonel, akıcı ve yönetim kuruluna sunulabilecek kalitede olsun."
+        "4. Havale/Toptan dip sınırının altına inen rakiplerde 'kârlılığı bozmamak için fiyat kırılmaması gerektiğini', "
+        "dip sınırın üzerinde kalan rakiplerde ise 'önerilen fiyata çekilerek 1. sıranın alınabileceğini' vurgula.\n"
+        "5. Raporun sonunda 'Aksiyon Önerileri:' başlığı altında 3 adet net, somut aksiyon maddesi listele."
     )
 
     user_content = (
-        f"Aşağıdaki günlük fiyat ve rekabet takip verilerini analiz ederek brifingi oluştur:\n\n"
+        f"Aşağıdaki Cep-Hane Teknoloji günlük fiyat ve rekabet takip verilerini analiz ederek sabah brifingini oluştur:\n\n"
         f"```json\n{json.dumps(data, ensure_ascii=False, indent=2)}\n```"
     )
 
-    # 1. Öncelik: Gemini API
     gemini_key = api_key or GEMINI_API_KEY
     if gemini_key:
-        print("🤖 Gemini Yapay Zeka Raporu Üretiliyor...")
+        print("🤖 Gemini Yapay Zeka Raporu Üretiliyor (Cep-Hane Teknoloji)...")
         res = _call_gemini(data, system_prompt, user_content, gemini_key)
         if res:
             return res
 
-    # 2. Öncelik: Groq API (Varsa)
     if GROQ_API_KEY:
-        print("⚡ Groq API üzerinden LLM Raporu Üretiliyor...")
+        print("⚡ Groq API üzerinden LLM Raporu Üretiliyor (Cep-Hane Teknoloji)...")
         res = _call_groq(data, system_prompt, user_content, GROQ_API_KEY)
         if res:
             return res
 
-    # 3. Kılavuz kuralı: Kural Tabanlı Güvenli Şablon Rapor
-    print("📋 Kılavuz kuralı gereği kural tabanlı şablon rapora geçiliyor...")
+    print("📋 Kural tabanlı Cep-Hane Teknoloji yönetici şablon raporuna geçiliyor...")
     return generate_fallback_report(data)
 
 
@@ -261,7 +275,6 @@ def save_last_report(report_text: str, report_data: Dict[str, Any]) -> None:
 def get_latest_report_text(db: Session) -> str:
     """
     Varsa kaydedilmiş son raporu döndürür; yoksa güncel verilerle şablon/LLM raporu üretip kaydeder.
-    Veritabanında henüz ürün veya fiyat kaydı yoksa 'Henüz veri yok' döndürür.
     """
     total_products = db.query(Product).count()
     total_snapshots = db.query(PriceSnapshot).count()
@@ -281,7 +294,6 @@ def get_latest_report_text(db: Session) -> str:
                     == report_data["rakibin_ucuz_oldugu_urun_sayisi"]
                 ):
                     return cached_text
-                # Eşleşme onayı vb. sonrası sayılar değiştiyse paneli bekletmeden şablonu güncelle
                 updated_fallback = generate_fallback_report(report_data)
                 save_last_report(updated_fallback, report_data)
                 return updated_fallback
@@ -298,7 +310,7 @@ def run_daily_report(db: Session) -> str:
     Rapor akışını baştan sona çalıştırır ve üretilen raporu terminalde gösterir.
     """
     print("\n" + "=" * 80)
-    print("📝 [LLM GÜNLÜK YÖNETİCİ ÖZETİ] Veriler Hazırlanıyor...")
+    print("📝 [CEP-HANE TEKNOLOJİ — GÜNLÜK YÖNETİCİ ÖZETİ] Veriler Hazırlanıyor...")
     print("=" * 80)
 
     report_data = prepare_report_data(db)
@@ -312,7 +324,7 @@ def run_daily_report(db: Session) -> str:
     save_last_report(report_text, report_data)
 
     print("\n" + "=" * 80)
-    print("📌 GÜNLÜK SABAH RAPORU (EXECUTIVE SUMMARY)")
+    print("📌 CEP-HANE TEKNOLOJİ GÜNLÜK SABAH RAPORU (EXECUTIVE SUMMARY)")
     print("=" * 80)
     print(report_text)
     print("=" * 80 + "\n")

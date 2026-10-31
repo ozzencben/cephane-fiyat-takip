@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-# Ortam değişkenlerini yükle
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
@@ -53,15 +52,14 @@ def format_daily_notification_message(
     llm_report: str, critical_alerts: List[Dict[str, Any]]
 ) -> str:
     """
-    Kılavuz gereksinimi:
-    Mesaj formatı: LLM raporu + en kritik 3 uyarı.
-    Telegram mesajı 4096 karakteri geçemez, uzunsa kısalt.
+    Cep-Hane Teknoloji Satın Alma Müdürlüğü için Telegram sabah brifingi formatı:
+    LLM yönetici özeti + en kritik 3 pazaryeri fiyat uyarısı ve Havale dip sınır analizi.
     """
     sections = [
-        "📊 <b>GÜNLÜK FİYAT TAKİP VE REKABET BRİFİNGİ</b>",
+        "📱 <b>CEP-HANE TEKNOLOJİ — GÜNLÜK FİYAT VE REKABET BRİFİNGİ</b>",
         "──────────────────────────────",
         llm_report.strip(),
-        "\n🚨 <b>ÖNE ÇIKAN KRİTİK UYARILAR (İLK 3)</b>",
+        "\n🚨 <b>ÖNE ÇIKAN KRİTİK PAZARYERİ UYARILARI (İLK 3)</b>",
         "──────────────────────────────",
     ]
 
@@ -70,20 +68,22 @@ def format_daily_notification_message(
         rakip = alert.get("rakip", "Rakip")
         bizim_fiyat = alert.get("bizim_fiyat", 0.0)
         rakip_fiyat = alert.get("rakip_fiyat", 0.0)
-        oneri = alert.get("oneri", "Aksiyon önerisi yok")
-        durum = alert.get("durum", "")
+        dip_sinir = alert.get("havale_dip_siniri")
+        oneri = str(alert.get("oneri", "Aksiyon önerisi yok")).replace("<", "&lt;").replace(">", "&gt;")
+        durum = str(alert.get("durum", "")).replace("<", "&lt;").replace(">", "&gt;")
+
+        dip_line = f" | Havale Dip: {dip_sinir:.2f} TL" if dip_sinir else ""
 
         sections.append(
             f"<b>{idx}. {urun}</b>\n"
-            f"   • Rakip: {rakip}\n"
-            f"   • Bizim: {bizim_fiyat:.2f} TL | Rakip: {rakip_fiyat:.2f} TL\n"
+            f"   • Kanal: {rakip}\n"
+            f"   • Cep-Hane: {bizim_fiyat:.2f} TL | Rakip: {rakip_fiyat:.2f} TL{dip_line}\n"
             f"   • Durum: {durum}\n"
             f"   • 💡 <i>{oneri}</i>\n"
         )
 
     full_message = "\n".join(sections)
 
-    # 4096 karakter sınır kontrolü
     if len(full_message) > MAX_TELEGRAM_MESSAGE_LENGTH:
         full_message = (
             full_message[: MAX_TELEGRAM_MESSAGE_LENGTH - 40]
@@ -100,7 +100,6 @@ def send_telegram_message(
     parse_mode: str = "HTML",
 ) -> bool:
     """
-    Kılavuz gereksinimi:
     httpx ile Telegram'ın sendMessage metodunu çağıran fonksiyon.
     """
     bot_token = token or TELEGRAM_TOKEN
@@ -117,7 +116,7 @@ def send_telegram_message(
             print(f"✓ Chat ID otomatik tespit edildi: {target_chat_id}")
         else:
             print("❌ Hata: TELEGRAM_CHAT_ID tespit edilemedi.")
-            print("   Lütfen Telegram'da @FaturaTakipSistemiBot botunuza gidip /start veya bir mesaj yazın!")
+            print("   Lütfen Telegram'da @Cep-haneFiyatTakipBot botunuza gidip /start veya bir mesaj yazın!")
             return False
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -135,7 +134,6 @@ def send_telegram_message(
             return True
         else:
             print(f"❌ Telegram gönderimi başarısız (HTTP {resp.status_code}): {resp.text}")
-            # HTML formatlama hatası ihtimaline karşı düz metin olarak tekrar dene
             if parse_mode == "HTML":
                 payload["parse_mode"] = ""
                 retry_resp = httpx.post(url, json=payload, timeout=30.0)
@@ -149,12 +147,12 @@ def send_telegram_message(
 
 
 if __name__ == "__main__":
-    print("🤖 Telegram Bildirim Testi Başlatılıyor...")
+    print("🤖 Cep-Hane Teknoloji Telegram Bildirim Testi Başlatılıyor...")
     load_dotenv()
     chat_id = get_telegram_chat_id()
     if chat_id:
         print(f"✓ Aktif Chat ID bulundu: {chat_id}")
-        send_telegram_message("🔔 Fiyat Takip Sistemi: Telegram bot entegrasyon testi başarılı!", chat_id=chat_id)
+        send_telegram_message("🔔 Cep-Hane Teknoloji Fiyat Takip Sistemi: Telegram bot entegrasyon testi başarılı!", chat_id=chat_id)
     else:
         print("⚠️ Henüz bota bir mesaj atılmamış.")
-        print("   Lütfen Telegram uygulamasından @FaturaTakipSistemiBot botunu açın ve /start yazın.")
+        print("   Lütfen Telegram uygulamasından @Cep-haneFiyatTakipBot botunu açın ve /start yazın.")
