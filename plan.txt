@@ -1,0 +1,16 @@
+🗺️ Cep-Hane Teknoloji Özel Demo — 5 Adımlı Geliştirme Planımız
+
+Bundan sonraki süreci yine aynı disiplinle, sen onay verdikçe adım adım ilerleteceğiz:
+
+✅ Adım 1: Proje Kopyalama ve İzole Ortam Kurulumu (Tamamlandı)
+✅ Adım 2: Cep-Hane Kataloğu (data/urunlerim.xlsx) ve Canlı Site Entegrasyonu (cephaneteknoloji.com) (Tamamlandı)
+Seçtiğimiz 12 gerçek ürünün (iPhone 15, iPhone 16e, iPhone 16 Plus, Galaxy A36/A26/A17, POCO X8 Pro, iPad Mini 7, Redmi Pad 2, Galaxy Watch 8, AirPods Pro 3, Apple 20W Adaptör) gerçek Kredi Kartı satış fiyatları ve Havale/EFT dip sınırlarıyla data/urunlerim.xlsx tablosuna işlenmesi.
+Ayrıca Serdar Bey'e sürpriz olarak cephaneteknoloji.com üzerinden fiyatları güncelleyebilen adapters/cephane_catalog.py yardımcı aracının eklenmesi.
+⏳ Adım 3: 3 Pazaryeri Rakip Kanalı (PttAVM, Hepsiburada, N11 / Pazarama) ve Gerçekçi Fiyat Senaryoları
+Tablodaki 3 rakip sütununun Cep-Hane'nin satış yaptığı 3 ana pazaryeri kanalına dönüştürülmesi.
+Bazı ürünlerde rakibin ucuz olduğu (RAKİP UCUZ — marj kurtaran öneri), bazılarında rakibin Havale dip fiyatının bile altına indiği (MARJ UYARISI), bazılarında ise Cep-Hane'nin en ucuz olup fiyat artırabileceği (FIRSAT / BİZ UCUZUZ) gerçekçi elektronik piyasa verilerinin ve 14 günlük geçmişin hazırlanması.
+⏳ Adım 4: Kural Motoru, Yönetici Özeti ve Telegram Bildiriminin Cep-Hane'ye Uyarlanması
+Kural motorunda "Havale Dip Fiyat Sınırı" ve "En Yakın Rakiple Marj Artırma Fırsatı" mesajlarının Satın Alma Müdürü diline uyarlanması.
+Telegram sabah brifinginin Cep-Hane Teknoloji başlığıyla telefonuna gerçek bildirim olarak gönderilip test edilmesi.
+⏳ Adım 5: Web Paneli Marka Uyarlaması ("Cep-Hane Teknoloji") ve Canlı Demo Videosu
+Panel başlığının, sütun isimlerinin ve eşleşme onay ekranının (%70-89 skorlu 3 telefon/aksesuar adayı) Cep-Hane Teknoloji'ye uyarlanması ve Serdar Bey'e göndereceğin özel tanıtım videosunun/ekran görüntülerinin alınması.
