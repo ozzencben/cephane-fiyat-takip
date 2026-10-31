@@ -1,0 +1,247 @@
+[
+  {
+    "id": 1,
+    "name": "A Light in the Attic (Ciltli)",
+    "price": 1932.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/1"
+  },
+  {
+    "id": 2,
+    "name": "Tipping the Velvet",
+    "price": 2322.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/2"
+  },
+  {
+    "id": 3,
+    "name": "Soumission",
+    "price": 1840.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/3"
+  },
+  {
+    "id": 4,
+    "name": "Sharp Objects - Roman",
+    "price": 1764.35,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/4"
+  },
+  {
+    "id": 5,
+    "name": "Sapiens: A Brief History",
+    "price": 2024.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/5"
+  },
+  {
+    "id": 6,
+    "name": "The Requiem Red",
+    "price": 972.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/6"
+  },
+  {
+    "id": 7,
+    "name": "The Dirty Little Secrets of Getting Your Dream Job",
+    "price": 1242.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/7"
+  },
+  {
+    "id": 8,
+    "name": "The Coming Woman: A Novel",
+    "price": 810.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/8"
+  },
+  {
+    "id": 9,
+    "name": "The Boys in the Boat",
+    "price": 874.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/9"
+  },
+  {
+    "id": 10,
+    "name": "The Black Maria",
+    "price": 1928.36,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/10"
+  },
+  {
+    "id": 11,
+    "name": "Starving Hearts (Triangular Trade Trilogy)",
+    "price": 506.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/11"
+  },
+  {
+    "id": 12,
+    "name": "Shakespeare's Sonnets",
+    "price": 821.71,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/12"
+  },
+  {
+    "id": 13,
+    "name": "Set Me Free",
+    "price": 644.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/13"
+  },
+  {
+    "id": 14,
+    "name": "Scott Pilgrim's Precious Little Life",
+    "price": 2268.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/14"
+  },
+  {
+    "id": 15,
+    "name": "Rip it Up and Start Again",
+    "price": 1288.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/15"
+  },
+  {
+    "id": 16,
+    "name": "Our Band Could Be Your Life",
+    "price": 2484.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/16"
+  },
+  {
+    "id": 17,
+    "name": "Olio Şiir Kitabı",
+    "price": 874.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/17"
+  },
+  {
+    "id": 18,
+    "name": "Mesaerion: Best Science Hikayeleri 1800-1849",
+    "price": 1460.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/18"
+  },
+  {
+    "id": 19,
+    "name": "Libertarian for Beginners Rehberi",
+    "price": 1980.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/19"
+  },
+  {
+    "id": 20,
+    "name": "Only the Himalayas Gezi Kitabı",
+    "price": 1760.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/20"
+  },
+  {
+    "id": 21,
+    "name": "Foolproof Preserving Reçel Rehberi",
+    "price": 1190.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/21"
+  },
+  {
+    "id": 22,
+    "name": "In Her Wake (Polisiye)",
+    "price": 525.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/22"
+  },
+  {
+    "id": 23,
+    "name": "How Music Works",
+    "price": 1440.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/23"
+  },
+  {
+    "id": 24,
+    "name": "Chase Me (Paris Nights)",
+    "price": 990.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/24"
+  },
+  {
+    "id": 25,
+    "name": "Black Dust",
+    "price": 1410.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/25"
+  },
+  {
+    "id": 26,
+    "name": "Lenovo IdeaTab (7 inç Android)",
+    "price": 2490.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/26"
+  },
+  {
+    "id": 27,
+    "name": "IdeaTab A3500L",
+    "price": 3180.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/27"
+  },
+  {
+    "id": 28,
+    "name": "Acer Iconia (16GB Tablet)",
+    "price": 3420.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/28"
+  },
+  {
+    "id": 29,
+    "name": "Iconia B1-730HD",
+    "price": 3520.0,
+    "in_stock": false,
+    "url": "http://localhost:8001/products/29"
+  },
+  {
+    "id": 30,
+    "name": "Memo Pad HD 7",
+    "price": 3690.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/30"
+  },
+  {
+    "id": 31,
+    "name": "Asus MeMO Pad",
+    "price": 3490.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/31"
+  },
+  {
+    "id": 32,
+    "name": "Amazon Kindle",
+    "price": 3680.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/32"
+  },
+  {
+    "id": 33,
+    "name": "IdeaTab A8-50",
+    "price": 4310.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/33"
+  },
+  {
+    "id": 34,
+    "name": "iPad Mini Retina (Wi-Fi)",
+    "price": 18950.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/34"
+  },
+  {
+    "id": 35,
+    "name": "Apple iPad Air",
+    "price": 21250.0,
+    "in_stock": true,
+    "url": "http://localhost:8001/products/35"
+  }
+]
