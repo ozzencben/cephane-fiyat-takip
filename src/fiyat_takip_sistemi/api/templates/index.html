@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiyat Takip ve Rekabet Paneli</title>
+    <title>Cep-Hane Teknoloji | Fiyat Takip ve Pazaryeri Rekabet Paneli</title>
     <style>
         :root {
             --bg-page: #f8fafc;
@@ -11,7 +11,8 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --border-color: #e2e8f0;
-            /* Kılavuz renk kuralı: Rakip ucuzsa kırmızı, rakip pahalıysa yeşil, fark yoksa gri */
+            --brand-primary: #1e293b;
+            --brand-accent: #2563eb;
             --red-bg: #fef2f2;
             --red-border: #fecaca;
             --red-text: #b91c1c;
@@ -34,24 +35,42 @@
             background-color: var(--bg-page);
             color: var(--text-main);
             line-height: 1.5;
-            padding: 1.75rem 1.25rem;
+            padding: 1.5rem 1.25rem;
             overflow-x: hidden;
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1320px;
             margin: 0 auto;
         }
 
         header {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-badge {
+            background: var(--brand-primary);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.25rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         header h1 {
@@ -65,22 +84,43 @@
             color: var(--text-muted);
         }
 
-        .nav-link-btn {
+        .header-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .nav-link-btn, .demo-action-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            padding: 0.5rem 0.9rem;
+            gap: 0.4rem;
+            padding: 0.5rem 0.85rem;
             border-radius: 0.375rem;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             text-decoration: none;
             color: var(--text-main);
             background: var(--bg-card);
             border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        .nav-link-btn:hover {
+        .nav-link-btn:hover, .demo-action-btn:hover {
             background: var(--gray-bg);
+        }
+
+        .demo-action-btn.btn-telegram {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        .demo-action-btn.btn-simulate {
+            background: #fff7ed;
+            color: #c2410c;
+            border-color: #fed7aa;
         }
 
         .nav-badge {
@@ -94,19 +134,31 @@
             border: 1px solid var(--red-border);
         }
 
+        .toast-banner {
+            display: none;
+            padding: 0.85rem 1.15rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: var(--green-bg);
+            color: var(--green-text);
+            border: 1px solid var(--green-border);
+        }
+
         /* 1. Üstte 3 Özet Kutusu */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .summary-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            padding: 1.25rem;
+            padding: 1.15rem 1.25rem;
         }
 
         .summary-card.card-danger {
@@ -137,13 +189,19 @@
             margin-top: 0.35rem;
         }
 
+        .summary-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
         /* 2. Günün LLM Raporu */
         .report-box {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
             padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .report-header {
@@ -164,6 +222,7 @@
         .report-header span {
             font-size: 0.75rem;
             color: var(--text-muted);
+            font-weight: 600;
         }
 
         .report-content {
@@ -205,7 +264,7 @@
             border: 1px solid var(--border-color);
             border-radius: 0.375rem;
             font-size: 0.875rem;
-            min-width: 260px;
+            min-width: 280px;
             color: var(--text-main);
             background: #fff;
         }
@@ -253,18 +312,17 @@
             background: var(--gray-bg);
             color: var(--text-muted);
             font-weight: 600;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 0.9rem;
             border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
         }
 
         tbody td {
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 0.9rem;
             border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
-        /* Renk kuralı: rakip ucuzsa kırmızı, rakip pahalıysa yeşil, fark yoksa gri */
         tr.row-red {
             background-color: var(--red-bg);
         }
@@ -307,6 +365,13 @@
             font-weight: 700;
         }
 
+        .dip-sub {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         .diff-red {
             color: var(--red-text);
             font-weight: 700;
@@ -323,7 +388,7 @@
 
         .status-badge {
             display: inline-block;
-            padding: 0.25rem 0.6rem;
+            padding: 0.22rem 0.55rem;
             border-radius: 0.25rem;
             font-size: 0.75rem;
             font-weight: 700;
@@ -391,10 +456,28 @@
     <div class="container">
         <header>
             <div>
-                <h1>Fiyat Takip ve Rekabet Paneli</h1>
-                <p>Excel ürün kataloğu ve rakip mağaza fiyatlarının günlük otomatik karşılaştırması</p>
+                <div class="brand-row">
+                    <span class="brand-badge">CEP-HANE TEKNOLOJİ</span>
+                    <h1>Fiyat Takip ve Pazaryeri Rekabet Paneli</h1>
+                </div>
+                <p>cephaneteknoloji.com kataloğu ile PttAVM, Hepsiburada ve N11/Pazarama en ucuz rakip fiyatlarının günlük otomatik karşılaştırması</p>
             </div>
-            <div>
+            <div class="header-actions">
+                <form method="post" action="/demo/telegram-gonder" style="display:inline;">
+                    <button type="submit" class="demo-action-btn btn-telegram" title="Güncel brifingi @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderir">
+                        📲 Telegram'a Brifing Gönder
+                    </button>
+                </form>
+                <form method="post" action="/demo/fiyat-dusur" style="display:inline;">
+                    <button type="submit" class="demo-action-btn btn-simulate" title="iPhone 15 128 GB ürününde N11/Pazarama %15 anlık rakip indirimi simüle eder">
+                        ⚡ Rakip İndirimi Test Et (%15)
+                    </button>
+                </form>
+                <form method="post" action="/demo/sifirla" style="display:inline;">
+                    <button type="submit" class="demo-action-btn" title="Demoyu ve onay bekleyen eşleşmeleri başlangıç durumuna döndürür">
+                        🔄 Demoyu Sıfırla
+                    </button>
+                </form>
                 <a href="/eslesmeler" class="nav-link-btn">
                     Eşleşme Onayı
                     {% if ozet.onay_bekleyen_eslesme_sayisi > 0 %}
@@ -406,27 +489,32 @@
             </div>
         </header>
 
+        <div id="toastBanner" class="toast-banner"></div>
+
         <!-- 1. Üstte 3 Özet Kutusu -->
         <section class="summary-grid">
             <div class="summary-card">
-                <div class="summary-label">İzlenen Ürün</div>
+                <div class="summary-label">İzlenen Cep-Hane Ürünü</div>
                 <div class="summary-value">{{ ozet.toplam_urun }}</div>
+                <div class="summary-sub">Telefon, Tablet, Saat &amp; Aksesuar</div>
             </div>
             <div class="summary-card card-danger">
                 <div class="summary-label">Rakibin Ucuz Olduğu Ürün</div>
                 <div class="summary-value text-red">{{ ozet.rakibin_ucuz_oldugu_urun_sayisi }}</div>
+                <div class="summary-sub">{{ ozet.toplam_urun - ozet.rakibin_ucuz_oldugu_urun_sayisi }} üründe en ucuz satıcı Cep-Hane</div>
             </div>
             <div class="summary-card">
-                <div class="summary-label">Son Güncelleme</div>
+                <div class="summary-label">Son Fiyat Kontrolü</div>
                 <div class="summary-value timestamp">{{ ozet.son_guncelleme_zamani }}</div>
+                <div class="summary-sub">3 Pazaryeri + cephaneteknoloji.com</div>
             </div>
         </section>
 
         <!-- 2. Altında Günün LLM Raporu -->
         <section class="report-box">
             <div class="report-header">
-                <h2>Günün Yönetici Özeti (LLM Raporu)</h2>
-                <span>Günlük Brifing</span>
+                <h2>Satın Alma Müdürlüğü — Günün Yönetici Özeti (Yapay Zeka Raporu)</h2>
+                <span>@Cep-haneFiyatTakipBot ile senkronize</span>
             </div>
             <div class="report-content">{{ ozet.son_rapor }}</div>
         </section>
@@ -439,12 +527,12 @@
                         type="text"
                         id="searchInput"
                         class="search-input"
-                        placeholder="Ürün adı veya SKU ara..."
+                        placeholder="Model adı, marka veya SKU (CPH-001) ara..."
                         aria-label="Ürün adı veya SKU ara"
                     >
                     <label class="filter-label">
                         <input type="checkbox" id="onlyCheaperCheckbox">
-                        Sadece rakibin ucuz olduğu ürünler
+                        Sadece rakibin bizden ucuz olduğu ürünleri göster
                     </label>
                 </div>
                 <div class="row-counter" id="rowCounter">
@@ -456,13 +544,13 @@
                 <table id="productsTable">
                     <thead>
                         <tr>
-                            <th>Ürün Adı</th>
-                            <th>Benim Fiyatım</th>
-                            <th>Rakip A (BooksToScrape)</th>
-                            <th>Rakip B (WebScraper)</th>
-                            <th>Rakip C (Sahte Mağaza)</th>
-                            <th>Fark</th>
-                            <th>Durum</th>
+                            <th>Ürün Adı (Detay &amp; 14 Günlük Grafik)</th>
+                            <th>Cep-Hane Fiyatı</th>
+                            <th>PttAVM (En Ucuz)</th>
+                            <th>Hepsiburada (En Ucuz)</th>
+                            <th>N11 / Pazarama (En Ucuz)</th>
+                            <th>En Ucuz Rakiple Fark</th>
+                            <th>Durum &amp; Satın Alma Önerisi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -476,11 +564,14 @@
                         >
                             <td>
                                 <a href="/urun/{{ u.id }}" class="product-name">{{ u.urun_adi }}</a>
-                                <span class="product-sku">{{ u.sku }}</span>
+                                <span class="product-sku">SKU: {{ u.sku }}</span>
                             </td>
-                            <td class="price-cell my-price">{{ "%.2f"|format(u.benim_fiyatim) }} TL</td>
+                            <td class="price-cell my-price">
+                                {{ "%.2f"|format(u.benim_fiyatim) }} TL
+                                <span class="dip-sub">Havale Dip: {{ "%.2f"|format(u.min_kabul_edilebilir_fiyat) }} TL</span>
+                            </td>
                             <td class="price-cell">
-                                {% if u.rakip_a is not none %}{{ "%.2f"|format(u.rakip_a) }} TL{% else %}-{% endif %}
+                                {% if u.rakip_a is not none %}{{ "%.2f"|format(u.rakip_a) }} TL{% else %}<span style="color:var(--text-muted)">Onay Bekliyor</span>{% endif %}
                             </td>
                             <td class="price-cell">
                                 {% if u.rakip_b is not none %}{{ "%.2f"|format(u.rakip_b) }} TL{% else %}-{% endif %}
@@ -499,7 +590,7 @@
                                 {% if is_cheaper %}
                                     <span class="status-badge badge-red">RAKİP UCUZ</span>
                                 {% elif is_expensive %}
-                                    <span class="status-badge badge-green">RAKİP PAHALI</span>
+                                    <span class="status-badge badge-green">EN UCUZ BİZİZ</span>
                                 {% else %}
                                     <span class="status-badge badge-gray">{{ u.durum }}</span>
                                 {% endif %}
@@ -525,6 +616,20 @@
             const rows = Array.from(document.querySelectorAll(".product-row"));
             const rowCounter = document.getElementById("rowCounter");
             const emptyState = document.getElementById("emptyState");
+            const toastBanner = document.getElementById("toastBanner");
+
+            const params = new URLSearchParams(window.location.search);
+            const bildirim = params.get("bildirim");
+            if (bildirim && toastBanner) {
+                toastBanner.style.display = "block";
+                if (bildirim === "telegram_gonderildi") {
+                    toastBanner.textContent = "✓ Günlük yönetici özeti ve kritik fiyat uyarıları @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderildi!";
+                } else if (bildirim === "indirim_simule_edildi") {
+                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11/Pazarama %15 rakip indirimi simüle edildi, rapor güncellendi ve Telegram'a acil uyarı geçildi!";
+                } else if (bildirim === "demo_sifirlandi") {
+                    toastBanner.textContent = "🔄 Demo veritabanı, pazaryeri fiyatları ve 3 onay bekleyen eşleşme başlangıç durumuna sıfırlandı.";
+                }
+            }
 
             function applyFilters() {
                 const query = searchInput.value.trim().toLowerCase();

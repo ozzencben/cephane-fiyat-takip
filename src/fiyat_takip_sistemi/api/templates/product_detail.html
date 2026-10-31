@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ detay.urun.urun_adi }} - Fiyat Geçmişi ve Detay</title>
-    <!-- Kılavuz gereksinimi: Grafik için Chart.js (CDN ile) -->
+    <title>{{ detay.urun.urun_adi }} - Cep-Hane Teknoloji Fiyat Geçmişi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -39,7 +38,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
         }
 
@@ -81,16 +80,14 @@
         }
 
         .demo-badge {
-            background: var(--gray-bg);
-            color: var(--gray-text);
-            border: 1px solid var(--gray-border);
+            background: #1e293b;
+            color: #ffffff;
             padding: 0.35rem 0.75rem;
             border-radius: 0.375rem;
             font-size: 0.75rem;
             font-weight: 600;
         }
 
-        /* Özet Kartları */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -134,7 +131,6 @@
             color: var(--green-text);
         }
 
-        /* Grafik Kutusu */
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -164,11 +160,10 @@
 
         .chart-container {
             position: relative;
-            height: 380px;
+            height: 390px;
             width: 100%;
         }
 
-        /* Geçmiş Kayıtlar Tablosu */
         .table-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -227,12 +222,6 @@
             border: 1px solid var(--green-border);
         }
 
-        .badge-gray {
-            background: var(--gray-bg);
-            color: var(--gray-text);
-            border: 1px solid var(--gray-border);
-        }
-
         @media (max-width: 768px) {
             .summary-grid {
                 grid-template-columns: 1fr;
@@ -245,25 +234,25 @@
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← Ürün Tablosuna Dön</a>
+        <a href="/" class="back-link">← Cep-Hane Rekabet Tablosuna Dön</a>
 
         <header>
             <div>
                 <h1>{{ detay.urun.urun_adi }}</h1>
                 <div class="sku-tag">SKU: {{ detay.urun.sku }} | Ürün ID: #{{ detay.urun.id }}</div>
             </div>
-            <span class="demo-badge">Demo: Örnek rakip mağaza ve örnek geçmiş verisi</span>
+            <span class="demo-badge">Cep-Hane Teknoloji — Çoklu Pazaryeri Rekabet Analizi</span>
         </header>
 
         <!-- Ürün Özet Kartları -->
         <section class="summary-grid">
             <div class="summary-card">
-                <div class="summary-label">Benim Fiyatım</div>
+                <div class="summary-label">Cep-Hane Kredi Kartı Fiyatı</div>
                 <div class="summary-value">{{ "%.2f"|format(detay.urun.benim_fiyatim) }} TL</div>
-                <div class="summary-sub">Sabit referans fiyatımız</div>
+                <div class="summary-sub">cephaneteknoloji.com liste fiyatımız</div>
             </div>
             <div class="summary-card">
-                <div class="summary-label">En Düşük Rakip Fiyatı</div>
+                <div class="summary-label">En Düşük Pazaryeri Rakibi</div>
                 {% if karsilastirma.en_dusuk_rakip_fiyat is not none %}
                     <div class="summary-value {% if karsilastirma.durum == 'RAKİP UCUZ' %}text-red{% elif karsilastirma.durum == 'BİZ UCUZUZ' %}text-green{% endif %}">
                         {{ "%.2f"|format(karsilastirma.en_dusuk_rakip_fiyat) }} TL
@@ -275,12 +264,12 @@
                 {% endif %}
             </div>
             <div class="summary-card">
-                <div class="summary-label">Maliyet &amp; Min. Kâr Marjı</div>
+                <div class="summary-label">Havale / Toptan Dip Sınırı</div>
                 <div class="summary-value">{{ "%.2f"|format(detay.urun.min_kabul_edilebilir_fiyat) }} TL</div>
                 <div class="summary-sub">Maliyet: {{ "%.2f"|format(detay.urun.maliyet) }} TL | Min Marj: %{{ "%.0f"|format(detay.urun.min_marj_yuzde) }}</div>
             </div>
             <div class="summary-card">
-                <div class="summary-label">Sistem Fiyat Önerisi</div>
+                <div class="summary-label">Satın Alma Sistem Önerisi</div>
                 {% if karsilastirma.onerilen_fiyat is not none %}
                     <div class="summary-value">{{ "%.2f"|format(karsilastirma.onerilen_fiyat) }} TL</div>
                 {% else %}
@@ -293,8 +282,8 @@
         <!-- Chart.js Çizgi Grafik -->
         <section class="chart-card">
             <div class="chart-header">
-                <h2>Son 14 Günlük Fiyat Değişim Grafiği</h2>
-                <span>Her rakip için ayrı çizgi, kendi fiyatımız için kesikli sabit çizgi</span>
+                <h2>Son 14 Günlük Pazaryeri Fiyat Değişim Grafiği</h2>
+                <span>Yeşil kesikli çizgi: Cep-Hane Liste Fiyatı | Turuncu noktalı çizgi: Havale Dip Sınırı</span>
             </div>
             {% if detay.gecmis %}
             <div class="chart-container">
@@ -310,7 +299,7 @@
         <!-- Fiyat Geçmişi Tablosu -->
         <section class="table-card">
             <div class="table-header">
-                Kronolojik Fiyat Geçmişi Kayıtları ({{ detay.gecmis|length }} Kayıt)
+                Kronolojik Pazaryeri Fiyat Kayıtları ({{ detay.gecmis|length }} Kayıt)
             </div>
             {% if detay.gecmis %}
             <div class="table-wrapper">
@@ -318,10 +307,10 @@
                     <thead>
                         <tr>
                             <th>Tarih</th>
-                            <th>Rakip Mağaza</th>
-                            <th>Rakip Ürün Adı</th>
+                            <th>Pazaryeri Kanalı</th>
+                            <th>Rakip İlan Başlığı</th>
                             <th>Rakip Fiyatı</th>
-                            <th>Benim Fiyatımla Fark</th>
+                            <th>Cep-Hane Liste Fiyatıyla Fark</th>
                             <th>Stok Durumu</th>
                         </tr>
                     </thead>
@@ -360,9 +349,9 @@
         (function () {
             const detayData = {{ detay | tojson }};
             const myPrice = detayData.urun.benim_fiyatim;
+            const minPrice = detayData.urun.min_kabul_edilebilir_fiyat;
             const rakipler = detayData.rakipler || [];
 
-            // Gün bazlı (YYYY-MM-DD) tüm benzersiz tarihleri topla ve sırala
             const dateSet = new Set();
             rakipler.forEach(function (rakip) {
                 (rakip.kayitlar || []).forEach(function (k) {
@@ -373,18 +362,17 @@
             });
             const labels = Array.from(dateSet).sort();
 
-            // Her rakip için gün bazlı son fiyatı eşleştir
             const palette = [
                 { border: "#dc2626", bg: "rgba(220, 38, 38, 0.08)" },
-                { border: "#475569", bg: "rgba(71, 85, 105, 0.08)" },
+                { border: "#2563eb", bg: "rgba(37, 99, 235, 0.08)" },
                 { border: "#0f172a", bg: "rgba(15, 23, 42, 0.08)" }
             ];
 
             const datasets = [];
 
-            // 1. Kendi fiyatımız için sabit çizgi
+            // 1. Cep-Hane Liste Fiyatı (Yeşil kesikli çizgi)
             datasets.push({
-                label: "Benim Fiyatım (" + myPrice.toFixed(2) + " TL)",
+                label: "Cep-Hane Liste Fiyatı (" + myPrice.toFixed(2) + " TL)",
                 data: labels.map(function () { return myPrice; }),
                 borderColor: "#15803d",
                 backgroundColor: "rgba(21, 128, 61, 0.05)",
@@ -394,7 +382,19 @@
                 tension: 0
             });
 
-            // 2. Her rakip için bir çizgi
+            // 2. Havale / Toptan Dip Sınırı (Turuncu noktalı çizgi)
+            datasets.push({
+                label: "Havale Dip Sınırı (" + minPrice.toFixed(2) + " TL)",
+                data: labels.map(function () { return minPrice; }),
+                borderColor: "#d97706",
+                backgroundColor: "rgba(217, 119, 6, 0.05)",
+                borderWidth: 2,
+                borderDash: [3, 3],
+                pointRadius: 0,
+                tension: 0
+            });
+
+            // 3. Her pazaryeri için ayrı çizgi
             rakipler.forEach(function (rakip, idx) {
                 const dateMap = {};
                 (rakip.kayitlar || []).forEach(function (k) {
@@ -462,4 +462,3 @@
     </script>
 </body>
 </html>
-

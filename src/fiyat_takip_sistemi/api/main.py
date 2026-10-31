@@ -15,7 +15,7 @@ from ..core.report import get_latest_report_text
 from ..scripts.seed_history import seed_price_history
 
 app = FastAPI(
-    title="Fiyat Takip Sistemi - Web Paneli API",
+    title="Cep-Hane Teknoloji | Fiyat Takip ve Rekabet Paneli API",
     description="Rakip fiyat karşılaştırma, günlük LLM raporu ve fiyat geçmişi API uç noktaları.",
     version="1.0.0",
 )
@@ -537,3 +537,78 @@ def get_urun_gecmis(id: int, db: Session = Depends(get_db)) -> Dict[str, Any]:
         "gecmis": tum_gecmis_kayitlari,
     }
 
+
+
+@app.post("/demo/fiyat-dusur", tags=["Canlı Demo Aksiyonları"])
+def post_demo_price_drop(db: Session = Depends(get_db)):
+    """
+    Canlı Demo: N11 / Pazarama kanalında Apple iPhone 15 128 GB ürününde %15 anlık rakip indirimi
+    simüle eder, kural motorunu ve yönetici raporunu yeniler ve Telegram'a anlık bildirim gönderir.
+    """
+    from datetime import datetime
+    from ..core.report import prepare_report_data, run_daily_report
+    from ..core.notify import format_daily_notification_message, send_telegram_message
+
+    comp_c = (
+        db.query(Competitor)
+        .filter(Competitor.ad.ilike("%N11%"))
+        .first()
+        or db.query(Competitor).order_by(Competitor.id.desc()).first()
+    )
+    target_name = "Apple iPhone 15 128 GB (Apple Türkiye Garantili) Siyah"
+    if comp_c:
+        latest = (
+            db.query(PriceSnapshot)
+            .filter(
+                PriceSnapshot.competitor_id == comp_c.id,
+                PriceSnapshot.ham_urun_adi == target_name,
+            )
+            .order_by(desc(PriceSnapshot.cekilme_zamani), desc(PriceSnapshot.id))
+            .first()
+        )
+        old_price = latest.fiyat if latest else 59600.0
+        new_price = round(old_price * 0.85, 2)
+        snap = PriceSnapshot(
+            competitor_id=comp_c.id,
+            ham_urun_adi=target_name,
+            fiyat=new_price,
+            stokta=True,
+            url="http://localhost:8001/urun/1",
+            cekilme_zamani=datetime.now(),
+        )
+        db.add(snap)
+        db.commit()
+
+    rep_text = run_daily_report(db)
+    rep_data = prepare_report_data(db)
+    tg_msg = format_daily_notification_message(rep_text, rep_data.get("en_kritik_uyarilar", []))
+    send_telegram_message(tg_msg)
+
+    return RedirectResponse(url="/?bildirim=indirim_simule_edildi", status_code=303)
+
+
+@app.post("/demo/telegram-gonder", tags=["Canlı Demo Aksiyonları"])
+def post_demo_send_telegram(db: Session = Depends(get_db)):
+    """
+    Canlı Demo: Güncel kural motoru ve yönetici özetini anında @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderir.
+    """
+    from ..core.report import get_latest_report_text, prepare_report_data
+    from ..core.notify import format_daily_notification_message, send_telegram_message
+
+    rep_text = get_latest_report_text(db)
+    rep_data = prepare_report_data(db)
+    tg_msg = format_daily_notification_message(rep_text, rep_data.get("en_kritik_uyarilar", []))
+    send_telegram_message(tg_msg)
+
+    return RedirectResponse(url="/?bildirim=telegram_gonderildi", status_code=303)
+
+
+@app.post("/demo/sifirla", tags=["Canlı Demo Aksiyonları"])
+def post_demo_reset(db: Session = Depends(get_db)):
+    """
+    Canlı Demo: Veritabanını, 3 onay bekleyen eşleşmeyi ve fiyatları başlangıç durumuna sıfırlar.
+    """
+    db.close()
+    from ..scripts.demo_reset import reset_demo_environment
+    reset_demo_environment()
+    return RedirectResponse(url="/?bildirim=demo_sifirlandi", status_code=303)
