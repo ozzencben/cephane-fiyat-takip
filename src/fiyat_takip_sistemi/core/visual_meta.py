@@ -134,3 +134,4 @@ def get_product_visual(sku: str) -> Dict[str, Any]:
         "specs": ["Resmi Garantili"],
     }
     return PRODUCT_VISUALS.get(sku, default_vis)
+
