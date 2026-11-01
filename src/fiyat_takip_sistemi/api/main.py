@@ -140,6 +140,13 @@ def _build_product_comparison_item(
     )
     min_comp_price: Optional[float] = cheapest_detail["fiyat"] if cheapest_detail else None
 
+    # En ucuz pazaryeri etiketini ilgili rakip detayina isle
+    for r_role, r_obj in rakip_detay_by_role.items():
+        if r_obj:
+            r_obj["is_cheapest"] = (
+                cheapest_detail is not None and r_obj.get("competitor_id") == cheapest_detail.get("competitor_id")
+            )
+
     fark: Optional[float] = None
     fark_yuzde: Optional[float] = None
     durum = "VERİ YOK"
@@ -191,10 +198,16 @@ def _build_product_comparison_item(
             durum = "EŞİT"
             oneri_notu = "Rakip ile fiyat eşit."
 
+    from ..core.visual_meta import get_product_visual
+    visual = get_product_visual(product.sku)
+    cep_hane_is_leader = bool(min_comp_price is not None and product.fiyat < min_comp_price)
+
     return {
         "id": product.id,
         "sku": product.sku,
         "urun_adi": product.urun_adi,
+        "visual": visual,
+        "cep_hane_is_leader": cep_hane_is_leader,
         "kategori_rozeti": get_product_category_badge(product.sku, product.urun_adi),
         "benim_fiyatim": product.fiyat,
         "maliyet": product.maliyet,

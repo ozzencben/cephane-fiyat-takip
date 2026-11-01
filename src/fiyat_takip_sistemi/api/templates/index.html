@@ -3,1045 +3,1488 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cep-Hane Teknoloji | Fiyat Takip ve Pazaryeri Rekabet Paneli</title>
+    <title>Cep-Hane Teknoloji — Pazaryeri Fiyat & Rekabet Karar Destek Merkezi</title>
+    <!-- Google Fonts: Plus Jakarta Sans for modern high-end SaaS feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-page: #f8fafc;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* Surface Colors */
+            --bg-body: #f8fafc;
             --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --border-subtle: #e2e8f0;
+            --border-strong: #cbd5e1;
+
+            /* Brand & Neutral Texts */
             --text-main: #0f172a;
-            --text-muted: #475569;
-            --border-color: #e2e8f0;
-            --brand-primary: #0f172a;
-            --brand-accent: #2563eb;
-            --red-bg: #fef2f2;
-            --red-border: #fecaca;
-            --red-text: #b91c1c;
-            --green-bg: #f0fdf4;
-            --green-border: #bbf7d0;
-            --green-text: #15803d;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            /* State Colors */
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+
+            --emerald: #059669;
+            --emerald-bg: #ecfdf5;
+            --emerald-border: #a7f3d0;
+
+            --rose: #e11d48;
+            --rose-bg: #fff1f2;
+            --rose-border: #fecdd3;
+
+            --amber: #d97706;
             --amber-bg: #fffbeb;
             --amber-border: #fde68a;
-            --amber-text: #b45309;
-            --gray-bg: #f1f5f9;
-            --gray-border: #cbd5e1;
-            --gray-text: #475569;
+
+            --indigo: #4f46e5;
+            --indigo-bg: #eef2ff;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px -3px rgba(37, 99, 235, 0.25);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-page);
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.5;
-            padding: 1.5rem 1.25rem;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 1420px;
-            margin: 0 auto;
-        }
-
-        header {
+        /* -------------------------------------------------------------
+           1. TOPBAR: Kurumsal Demo Şeridi
+           ------------------------------------------------------------- */
+        .topbar-enterprise {
+            background: #090d16;
+            color: #e2e8f0;
+            font-size: 0.775rem;
+            padding: 0.65rem 1.75rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
-        .brand-row {
+        .topbar-left, .topbar-right {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.25rem;
+            gap: 0.85rem;
+            flex-wrap: wrap;
         }
 
-        .brand-badge {
-            background: var(--brand-primary);
+        .topbar-badge {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: #ffffff;
-            font-size: 0.75rem;
             font-weight: 700;
-            padding: 0.25rem 0.65rem;
-            border-radius: 0.25rem;
-            letter-spacing: 0.04em;
+            font-size: 0.675rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
         }
 
-        header h1 {
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .topbar-company {
+            font-weight: 600;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        header p {
-            font-size: 0.85rem;
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-animation 2s infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .topbar-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.25rem 0.65rem;
+            border-radius: 0.4rem;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        /* -------------------------------------------------------------
+           2. MAIN CONTAINER & HEADER
+           ------------------------------------------------------------- */
+        .container {
+            max-width: 1720px;
+            margin: 0 auto;
+            padding: 1.25rem 1.25rem 3.5rem 1.25rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .main-title h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-title p {
+            font-size: 0.875rem;
             color: var(--text-muted);
+            margin-top: 0.15rem;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
+            gap: 0.65rem;
             flex-wrap: wrap;
-            gap: 0.5rem;
         }
 
-        .nav-link-btn, .demo-action-btn {
+        .btn {
+            font-family: var(--font-sans);
+            font-size: 0.825rem;
+            font-weight: 600;
+            padding: 0.55rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border-color: var(--border-strong);
+            color: #334155;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        .btn-telegram {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-telegram:hover {
+            background: #0369a1;
+        }
+
+        .btn-matches {
+            background: #ffffff;
+            border-color: var(--border-strong);
+            color: #1e293b;
+            position: relative;
+        }
+
+        .btn-matches .badge-count {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.1rem 0.45rem;
+            border-radius: 9999px;
+            margin-left: 0.2rem;
+        }
+
+        /* -------------------------------------------------------------
+           3. COMMAND CENTER: KRİZ TESTİ & CANLI SİMÜLASYON
+           ------------------------------------------------------------- */
+        .simulation-command-deck {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 0.75rem;
+            padding: 1.15rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #334155;
+            box-shadow: var(--shadow-lg);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .deck-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .deck-info {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .deck-pill {
+            background: rgba(245, 158, 11, 0.18);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            font-size: 0.725rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .deck-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .deck-subtitle {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 0.1rem;
+        }
+
+        .deck-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .btn-sim-trigger {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            font-weight: 700;
+            border: none;
+            padding: 0.6rem 1.15rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.48rem 0.82rem;
-            border-radius: 0.375rem;
-            font-size: 0.8125rem;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-sim-trigger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-sim-reset {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #e2e8f0;
             font-weight: 600;
-            text-decoration: none;
-            color: var(--text-main);
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            padding: 0.6rem 0.95rem;
+            border-radius: 0.5rem;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.15s;
         }
 
-        .nav-link-btn:hover, .demo-action-btn:hover {
-            background: var(--gray-bg);
+        .btn-sim-reset:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
         }
 
-        .demo-action-btn.btn-excel {
-            background: #ecfdf5;
-            color: #047857;
-            border-color: #a7f3d0;
-        }
-
-        .demo-action-btn.btn-telegram {
-            background: #eff6ff;
-            color: #1d4ed8;
-            border-color: #bfdbfe;
-        }
-
-        .demo-action-btn.btn-simulate {
-            background: #fff7ed;
-            color: #c2410c;
-            border-color: #fed7aa;
-        }
-
-        .nav-badge {
-            display: inline-block;
-            padding: 0.1rem 0.45rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: var(--red-bg);
-            color: var(--red-text);
-            border: 1px solid var(--red-border);
-        }
-
-        /* Canlı Demo Test Rehberi Barı */
-        .guide-banner {
-            background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%);
-            border: 1px solid #bfdbfe;
-            border-left: 4px solid #2563eb;
-            border-radius: 0.5rem;
-            padding: 0.85rem 1.15rem;
-            margin-bottom: 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .guide-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #1e3a8a;
-            margin-bottom: 0.2rem;
-        }
-
-        .guide-steps {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.1rem;
-            font-size: 0.8125rem;
-            color: #1e40af;
-        }
-
-        .guide-steps span strong {
-            color: #0f172a;
-        }
-
-        .toast-banner {
-            display: none;
-            padding: 0.85rem 1.15rem;
-            margin-bottom: 1.25rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            background: var(--green-bg);
-            color: var(--green-text);
-            border: 1px solid var(--green-border);
-        }
-
-        /* Simülasyon Açıklama Kutusu */
-        .simulation-explainer-card {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-left: 4px solid #f59e0b;
-            border-radius: 0.6rem;
-            padding: 0.9rem 1.15rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-        }
-        .sim-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .sim-title {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.9rem;
-            color: #92400e;
-        }
-        .sim-badge {
-            background: #fef3c7;
-            color: #b45309;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 0.2rem 0.55rem;
-            border-radius: 9999px;
-            border: 1px solid #fcd34d;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-        .sim-tag {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #b45309;
-            background: #ffffff;
-            padding: 0.2rem 0.6rem;
-            border-radius: 0.35rem;
-            border: 1px solid #fde68a;
-        }
-        .sim-grid {
+        /* 3 Adım Uçuş Hattı (Visual Flow) */
+        .deck-flight-path {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.85rem;
-        }
-        @media (max-width: 900px) {
-            .sim-grid { grid-template-columns: 1fr; }
-        }
-        .sim-col {
-            background: #ffffff;
-            border: 1px solid #fef08a;
-            border-radius: 0.45rem;
-            padding: 0.7rem 0.85rem;
-        }
-        .sim-col-label {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #78350f;
-            margin-bottom: 0.3rem;
-            display: flex;
+            grid-template-columns: 1fr auto 1.3fr auto 1fr;
             align-items: center;
-            gap: 0.3rem;
-        }
-        .sim-col p {
-            font-size: 0.775rem;
-            line-height: 1.45;
-            color: #451a03;
-            margin: 0;
-        }
-        .sim-col p strong {
-            color: #0f172a;
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.75rem 1.15rem;
+            border-radius: 0.5rem;
         }
 
-        /* 1. Üstte 4 Özet Kutusu */
+        @media (max-width: 1024px) {
+            .deck-flight-path { grid-template-columns: 1fr; gap: 0.5rem; }
+            .path-arrow { display: none; }
+        }
+
+        .path-step {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 0.8rem;
+        }
+
+        .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .step-num.amber { background: #f59e0b; color: #000; }
+        .step-num.blue { background: #3b82f6; color: #fff; }
+        .step-num.green { background: #10b981; color: #fff; }
+
+        .path-step strong { color: #f8fafc; font-weight: 700; }
+        .path-step span { color: #94a3b8; font-size: 0.75rem; }
+        .path-arrow { color: #64748b; font-weight: 700; font-size: 0.9rem; }
+
+        /* -------------------------------------------------------------
+           4. KPI FINANCIAL CARDS
+           ------------------------------------------------------------- */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.25rem;
+            gap: 1.15rem;
+            margin-bottom: 1.5rem;
         }
 
-        .summary-card {
+        @media (max-width: 1100px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .summary-grid { grid-template-columns: 1fr; }
+        }
+
+        .kpi-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1.1rem 1.2rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.35rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .summary-card.card-danger {
-            border-left: 4px solid var(--red-text);
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #cbd5e1;
         }
 
-        .summary-card.card-success {
-            border-left: 4px solid var(--green-text);
-        }
+        .kpi-card.kpi-blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .kpi-card.kpi-rose::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+        .kpi-card.kpi-emerald::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .kpi-card.kpi-indigo::before { background: linear-gradient(90deg, #6366f1, #818cf8); }
 
-        .summary-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--text-muted);
-            margin-bottom: 0.3rem;
-        }
-
-        .summary-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .summary-value.text-red {
-            color: var(--red-text);
-        }
-
-        .summary-value.text-green {
-            color: var(--green-text);
-        }
-
-        .summary-value.timestamp {
-            font-size: 1.15rem;
-            margin-top: 0.35rem;
-        }
-
-        .summary-sub {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* 2. Günün LLM Raporu */
-        .report-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1.2rem 1.4rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .report-header {
+        .kpi-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
         }
 
-        .report-header h2 {
-            font-size: 1.02rem;
+        .kpi-title {
+            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .report-header span {
-            font-size: 0.75rem;
             color: var(--text-muted);
-            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
-        .report-content {
-            font-size: 0.92rem;
+        .kpi-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+        }
+
+        .badge-blue { background: #eff6ff; color: #1d4ed8; }
+        .badge-rose { background: #fff1f2; color: #be123c; }
+        .badge-emerald { background: #ecfdf5; color: #047857; }
+        .badge-indigo { background: #eef2ff; color: #4338ca; }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 800;
             color: var(--text-main);
-            white-space: pre-line;
-            line-height: 1.65;
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+            margin-bottom: 0.35rem;
         }
 
-        /* 3. Arama Kutusu ve Hızlı Filtre Sekmeleri */
-        .table-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+        .kpi-value small {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .kpi-footer {
+            font-size: 0.775rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* -------------------------------------------------------------
+           5. AI EXECUTIVE BRIEFING TERMINAL
+           ------------------------------------------------------------- */
+        .ai-briefing-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
 
-        .toolbar {
+        .ai-header {
+            background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 0.85rem 1.35rem;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 0.85rem;
-            padding: 1rem 1.2rem;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-card);
+            gap: 0.5rem;
         }
 
-        .toolbar-left {
+        .ai-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #1e293b;
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            flex: 1;
+            gap: 0.45rem;
         }
 
-        .search-input {
-            padding: 0.48rem 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
+        .ai-body {
+            padding: 1.15rem 1.35rem;
             font-size: 0.85rem;
-            min-width: 250px;
-            color: var(--text-main);
-            background: #fff;
+            line-height: 1.6;
+            color: #334155;
         }
 
-        .search-input:focus {
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 0.75rem;
+        }
+
+        @media (max-width: 900px) {
+            .ai-grid { grid-template-columns: 1fr; }
+        }
+
+        .ai-action-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.75rem 0.65rem;
+        }
+
+        .ai-action-card.urgent {
+            border-left: 4px solid #ef4444;
+            background: #fffafa;
+        }
+
+        .ai-action-card.profit {
+            border-left: 4px solid #10b981;
+            background: #f0fdf4;
+        }
+
+        .ai-card-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ai-card-title.urgent { color: #b91c1c; }
+        .ai-card-title.profit { color: #047857; }
+
+        .ai-chips-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            font-size: 0.775rem;
+        }
+
+        .ai-chip-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0.5rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.35rem;
+        }
+
+        /* -------------------------------------------------------------
+           6. SEARCH & FILTER TOOLBAR
+           ------------------------------------------------------------- */
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 420px;
+        }
+
+        .search-box input {
+            width: 100%;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            padding: 0.6rem 1rem 0.6rem 2.4rem;
+            border: 1px solid var(--border-strong);
+            border-radius: 0.5rem;
+            background: #ffffff;
+            color: var(--text-main);
             outline: none;
-            border-color: var(--brand-accent);
+            transition: all 0.15s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         .filter-tabs {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-        }
-
-        .filter-tab {
-            padding: 0.42rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.78rem;
-            font-weight: 600;
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .filter-tab:hover {
-            background: var(--gray-bg);
-            color: var(--text-main);
-        }
-
-        .filter-tab.active {
-            background: var(--brand-primary);
-            color: #ffffff;
-            border-color: var(--brand-primary);
-        }
-
-        .row-counter {
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* 4. Ürün Karşılaştırma Tablosu */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        thead th {
-            background: var(--gray-bg);
-            color: var(--text-muted);
-            font-weight: 600;
-            padding: 0.65rem 0.65rem;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-        }
-
-        tbody td {
-            padding: 0.65rem 0.65rem;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-        }
-
-        tr.row-red {
-            background-color: var(--red-bg);
-        }
-
-        tr.row-green {
-            background-color: var(--green-bg);
-        }
-
-        tr.row-gray {
-            background-color: var(--bg-card);
-        }
-
-        tbody tr:hover {
-            filter: brightness(0.98);
-        }
-
-        .product-name {
-            font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 0.88rem;
-        }
-
-        .product-name:hover {
-            text-decoration: underline;
-            color: var(--brand-accent);
-        }
-
-        .product-sku {
-            display: block;
-            font-size: 0.73rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-top: 0.15rem;
-        }
-
-        .price-cell {
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
-
-        .my-price {
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .dip-sub {
-            display: block;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-top: 0.15rem;
-        }
-
-        .seller-price {
-            font-weight: 700;
-            color: var(--text-main);
-            display: block;
-        }
-
-        .seller-meta {
-            display: block;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            margin-top: 0.15rem;
-        }
-
-        .seller-rating {
-            display: inline-block;
-            background: #fef3c7;
-            color: #92400e;
-            font-weight: 700;
-            padding: 0.05rem 0.32rem;
-            border-radius: 0.2rem;
-            font-size: 0.68rem;
-        }
-
-        .seller-stock-low {
-            color: #b45309;
-            font-weight: 600;
-        }
-
-        .seller-stock-out {
-            color: #b91c1c;
-            font-weight: 700;
-        }
-
-        .cheapest-seller-tag {
-            display: block;
-            margin-top: 0.2rem;
-            font-size: 0.71rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            white-space: normal;
-        }
-
-        .diff-red {
-            color: var(--red-text);
-            font-weight: 700;
-        }
-
-        .diff-green {
-            color: var(--green-text);
-            font-weight: 700;
-        }
-
-        .diff-gray {
-            color: var(--gray-text);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.55rem;
-            border-radius: 0.25rem;
-            font-size: 0.72rem;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .badge-red {
-            background-color: var(--red-bg);
-            color: var(--red-text);
-            border: 1px solid var(--red-border);
-        }
-
-        .badge-amber {
-            background-color: var(--amber-bg);
-            color: var(--amber-text);
-            border: 1px solid var(--amber-border);
-        }
-
-        .badge-green {
-            background-color: var(--green-bg);
-            color: var(--green-text);
-            border: 1px solid var(--green-border);
-        }
-
-        .badge-gray {
-            background-color: var(--gray-bg);
-            color: var(--gray-text);
-            border: 1px solid var(--gray-border);
-        }
-
-        .recommendation-subtext {
-            display: block;
-            font-size: 0.73rem;
-            color: var(--text-main);
-            margin-top: 0.22rem;
-            font-weight: 500;
-            max-width: 250px;
-            white-space: normal;
-            line-height: 1.35;
-        }
-
-        .empty-state {
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            display: none;
-        }
-
-
-        /* Canlı İşlem Progress Modal */
-        .progress-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.55);
-            backdrop-filter: blur(3px);
-            display: none;
-            justify-content: center;
             align-items: center;
-            z-index: 9999;
-            padding: 1rem;
-        }
-
-        .progress-modal {
-            background: #ffffff;
-            border-radius: 0.75rem;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18);
-            max-width: 480px;
-            width: 100%;
-            padding: 1.5rem;
-        }
-
-        .progress-modal-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 0.35rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .progress-modal-sub {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 10px;
+            gap: 0.35rem;
             background: #e2e8f0;
-            border-radius: 9999px;
-            overflow: hidden;
-            margin-bottom: 1rem;
+            padding: 0.25rem;
+            border-radius: 0.5rem;
         }
 
-        .progress-fill {
-            height: 100%;
-            width: 12%;
-            background: linear-gradient(90deg, #2563eb, #1d4ed8);
-            border-radius: 9999px;
-            transition: width 0.35s ease;
-        }
-
-        .progress-steps-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.55rem;
-            font-size: 0.82rem;
-        }
-
-        .progress-step-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #64748b;
-            padding: 0.4rem 0.6rem;
-            border-radius: 0.375rem;
-            background: #f8fafc;
-            transition: all 0.2s ease;
-        }
-
-        .progress-step-item.active {
-            color: #1e3a8a;
-            background: #eff6ff;
+        .tab-btn {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
             font-weight: 600;
-            border: 1px solid #bfdbfe;
-        }
-
-        .progress-step-item.done {
-            color: #15803d;
-            background: #f0fdf4;
-            font-weight: 600;
-        }
-
-
-        /* Kurumsal Koyu Lacivert Üst Bar (Enterprise Topbar) */
-        .enterprise-topbar {
-            background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
-            margin: -1.5rem -1.25rem 1.5rem -1.25rem;
-            padding: 0.75rem 1.5rem;
-            border-bottom: 1px solid #334155;
-        }
-
-        .enterprise-topbar-inner {
-            max-width: 1420px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.82rem;
-            color: #cbd5e1;
-        }
-
-        .topbar-brand-pill {
-            background: #2563eb;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.72rem;
-            padding: 0.2rem 0.55rem;
-            border-radius: 0.25rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-        }
-
-        .status-pill {
+            border: none;
+            background: transparent;
+            color: #475569;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.35rem;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: #e2e8f0;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.25rem 0.65rem;
+            transition: all 0.15s;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-count {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.05rem 0.4rem;
             border-radius: 9999px;
         }
 
-        .dot-live {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
+        .tab-btn.active .tab-count {
+            background: #0f172a;
+            color: #ffffff;
         }
 
-        /* Tam Sürüm Yol Haritası & Farkımız Bölümü */
-        .roadmap-section {
-            margin-top: 1.75rem;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
+        /* -------------------------------------------------------------
+           7. THE MASTERPIECE TABLE
+           ------------------------------------------------------------- */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
             border-radius: 0.75rem;
-            padding: 1.6rem 1.75rem;
-            border: 1px solid #334155;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table.catalog-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+        }
+
+        table.catalog-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 0.65rem;
+            border-bottom: 1px solid var(--border-subtle);
+            white-space: nowrap;
+        }
+
+        table.catalog-table td {
+            padding: 0.75rem 0.65rem;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+
+        table.catalog-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.catalog-table tr.product-row:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Sütun 1: Ürün Hücresi (Device Identity) */
+        .cell-product {
+            min-width: 240px;
+        }
+
+        .product-meta-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .device-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .product-info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .product-headline {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #0f172a;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            line-height: 1.35;
+        }
+
+        .product-headline:hover {
+            color: var(--primary);
+        }
+
+        .brand-chip {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.25rem;
+            letter-spacing: 0.04em;
+        }
+
+        .apple-badge { background: #0f172a; color: #ffffff; }
+        .samsung-badge { background: #1e3a8a; color: #ffffff; }
+        .xiaomi-badge { background: #ea580c; color: #ffffff; }
+        .poco-badge { background: #ca8a04; color: #000000; }
+
+        .product-specs-row {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .spec-pill {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.3rem;
+        }
+
+        .sku-link {
+            font-size: 0.725rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 0.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .sku-link:hover { text-decoration: underline; }
+
+        /* Sütun 2: Cep-Hane Fiyatı */
+        .cell-my-price {
+            min-width: 135px;
+        }
+
+        .my-price-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .my-price-card.is-leader {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 0.5rem 0.65rem;
+            border-radius: 0.5rem;
+        }
+
+        .leader-crown-tag {
+            font-size: 0.675rem;
+            font-weight: 800;
+            color: #047857;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .my-price-val {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .my-price-sub {
+            font-size: 0.725rem;
+            color: #64748b;
+        }
+
+        /* Sütun 3, 4, 5: Pazaryeri Hücreleri (PttAVM, Hepsiburada, N11) */
+        .cell-marketplace {
+            min-width: 155px;
+        }
+
+        .market-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            position: relative;
+            transition: all 0.15s;
+        }
+
+        .market-card.is-winner {
+            background: #f0fdf4;
+            border: 1.5px solid #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .market-winner-crown {
+            font-size: 0.675rem;
+            font-weight: 800;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .market-tag {
+            font-size: 0.675rem;
+            font-weight: 700;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .tag-ptt { background: #002f6c; color: #f9b000; }
+        .tag-hb { background: #ff6000; color: #ffffff; }
+        .tag-n11 { background: #e62117; color: #ffffff; }
+
+        .market-price {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.975rem;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .market-card.is-winner .market-price {
+            color: #047857;
+            font-weight: 800;
+        }
+
+        .market-store-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.725rem;
+            color: #475569;
+        }
+
+        .market-rating {
+            color: #ca8a04;
+            font-weight: 700;
+        }
+
+        .market-stock-chip {
+            font-size: 0.685rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .stock-alert { color: #dc2626; font-weight: 700; }
+
+        /* Sütun 6: Fark Çipi */
+        .cell-diff {
+            min-width: 130px;
+        }
+
+        .diff-chip-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .diff-pill {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.55rem;
+            border-radius: 0.35rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            width: fit-content;
+        }
+
+        .diff-danger { background: #fee2e2; color: #dc2626; }
+        .diff-success { background: #dcfce7; color: #15803d; }
+        .diff-gray { background: #f1f5f9; color: #64748b; }
+
+        .diff-winner-name {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* Sütun 7: Karar & Aksiyon Kartı */
+        .cell-action {
+            min-width: 215px;
+        }
+
+        .action-card-widget {
+            border-radius: 0.5rem;
+            padding: 0.65rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .action-card-widget.buybox {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .action-card-widget.profit {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        .action-card-widget.risk {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+        }
+
+        .action-widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-widget-badge {
+            font-size: 0.675rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .action-card-widget.buybox .action-widget-badge { color: #1d4ed8; }
+        .action-card-widget.profit .action-widget-badge { color: #047857; }
+        .action-card-widget.risk .action-widget-badge { color: #be123c; }
+
+        .action-widget-price {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .action-card-widget.buybox .action-widget-price { color: #1e3a8a; }
+        .action-card-widget.profit .action-widget-price { color: #065f46; }
+        .action-card-widget.risk .action-widget-price { color: #9f1239; }
+
+        .action-widget-sub {
+            font-size: 0.725rem;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .action-tag {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+        }
+
+        /* -------------------------------------------------------------
+           8. SEKTÖREL MODÜLLER (Tam Sürüm Yol Haritası)
+           ------------------------------------------------------------- */
+        .roadmap-section {
+            background: #0f172a;
+            border-radius: 0.75rem;
+            padding: 2rem 2.25rem;
+            color: #ffffff;
+            margin-top: 2rem;
+            border: 1px solid #1e293b;
         }
 
         .roadmap-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .roadmap-header h2 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.25rem;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #f8fafc;
         }
 
         .roadmap-header p {
-            font-size: 0.84rem;
-            color: #cbd5e1;
-        }
-
-        .roadmap-tag {
-            background: rgba(37, 99, 235, 0.25);
-            border: 1px solid #60a5fa;
-            color: #93c5fd;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 0.3rem 0.75rem;
-            border-radius: 0.375rem;
-            white-space: nowrap;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+            max-width: 900px;
         }
 
         .roadmap-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
+            gap: 1.15rem;
+        }
+
+        @media (max-width: 1200px) {
+            .roadmap-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .roadmap-grid { grid-template-columns: 1fr; }
         }
 
         .roadmap-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            padding: 1.1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.65rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            transition: all 0.2s;
+        }
+
+        .roadmap-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .roadmap-card-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .roadmap-card h3 {
-            font-size: 0.9rem;
+            font-size: 0.925rem;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.45rem;
+            color: #f8fafc;
         }
 
         .roadmap-card p {
-            font-size: 0.79rem;
-            color: #cbd5e1;
+            font-size: 0.785rem;
+            color: #94a3b8;
             line-height: 1.5;
         }
 
-        @media (max-width: 900px) {
-            .roadmap-grid { grid-template-columns: 1fr; }
-            body {
-                padding: 1rem 0.75rem;
-            }
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .toolbar-left {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-input {
-                width: 100%;
-                min-width: 0;
-            }
+        /* -------------------------------------------------------------
+           9. CANLI AKSİYON MODALI (Progress Modal)
+           ------------------------------------------------------------- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            width: 92%;
+            max-width: 540px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            text-align: center;
+        }
+
+        .modal-spinner-ring {
+            width: 56px;
+            height: 56px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #f59e0b;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 1.25rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .modal-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar-track {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 15%;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+
+        .modal-steps-list {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            font-size: 0.825rem;
+            color: #475569;
+        }
+
+        .modal-step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            opacity: 0.4;
+            transition: all 0.25s;
+        }
+
+        .modal-step-item.active {
+            opacity: 1;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .modal-step-item.done {
+            opacity: 0.9;
+            color: #059669;
+        }
+
+        .step-icon {
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
-    <div class="enterprise-topbar">
-        <div class="enterprise-topbar-inner">
-            <div class="topbar-left">
-                <span class="topbar-brand-pill">ÖZEL DEMO ORTAMI</span>
-                <span><strong>Cep-Hane Teknoloji</strong> (cephaneteknoloji.com) için özelleştirilmiş Satın Alma &amp; Rekabet Karar Destek Sistemi</span>
-            </div>
-            <div class="topbar-right">
-                <span class="status-pill"><span class="dot-live"></span> Canlı Pazaryeri Motoru Aktif</span>
-                <span class="status-pill">📦 Katalog Tespiti: 210 Ürün (Demoda 12 Seçili Model)</span>
-                <span class="status-pill">📲 Telegram: @Cep-haneFiyatTakipBot</span>
-            </div>
+
+    <!-- 1. KURUMSAL TOPBAR -->
+    <header class="topbar-enterprise">
+        <div class="topbar-left">
+            <span class="topbar-badge">ÖZEL DEMO ORTAMI</span>
+            <span class="topbar-company">
+                <strong>Cep-Hane Teknoloji</strong> (cephaneteknoloji.com) — Mersin
+            </span>
+            <span class="topbar-pill">
+                <span class="pulse-dot"></span>
+                Canlı Pazaryeri Motoru Aktif
+            </span>
+            <span class="topbar-pill">
+                📦 Katalog: 210 Ürün (12 Seçili Model)
+            </span>
         </div>
-    </div>
+        <div class="topbar-right">
+            <span class="topbar-pill">
+                🤖 Telegram: @Cep-haneFiyatTakipBot
+            </span>
+            <span class="topbar-pill">
+                🕒 Son Tarama: 2026-10-31 12:11:38
+            </span>
+        </div>
+    </header>
+
     <div class="container">
-        <header>
-            <div>
-                <div class="brand-row">
-                    <span class="brand-badge">CEP-HANE TEKNOLOJİ</span>
-                    <h1>Fiyat Takip, Satıcı Analizi ve Pazaryeri Rekabet Paneli</h1>
-                </div>
-                <p>cephaneteknoloji.com kataloğu ile PttAVM, Hepsiburada ve N11/Pazarama en ucuz rakip mağazalarının günlük otomatik karşılaştırması</p>
+
+        <!-- 2. ANA SAYFA BAŞLIĞI VE AKSİYONLAR -->
+        <div class="main-header">
+            <div class="main-title">
+                <h1>Fiyat Takip, Satıcı Analizi & Rekabet Karar Destek Merkezi</h1>
+                <p>cephaneteknoloji.com ürün kataloğunun PttAVM, Hepsiburada ve N11/Pazarama mağazalarıyla anlık rekabet ve kâr analizi</p>
             </div>
             <div class="header-actions">
-                <a href="/indir/onerilen-fiyatlar.xlsx" class="demo-action-btn btn-excel" title="PraPazar ve Excel uyumlu önerilen fiyat listesini indirir">
-                    📥 Önerilen Fiyatları İndir (.xlsx)
+                <a href="/indir/onerilen-fiyatlar.xlsx" class="btn btn-outline" title="Tüm fiyat önerilerini Excel olarak indir">
+                    📊 .xlsx Fiyat Raporu İndir
                 </a>
                 <form method="post" action="/demo/telegram-gonder" style="display:inline;">
-                    <button type="submit" class="demo-action-btn btn-telegram" title="Güncel brifingi @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderir">
+                    <button type="submit" class="btn btn-telegram" title="Cep-Hane Telegram kanalına anlık brifing atar">
                         📲 Telegram'a Brifing Gönder
                     </button>
                 </form>
-                <form method="post" action="/demo/fiyat-dusur" style="display:inline;">
-                    <button type="submit" class="demo-action-btn btn-simulate" title="iPhone 15 128 GB ürününde N11/TeknoMerkez %15 anlık rakip indirimi simüle eder">
-                        ⚡ Rakip İndirimi Simüle Et (-1.260 TL)
-                    </button>
-                </form>
-                <form method="post" action="/demo/sifirla" style="display:inline;">
-                    <button type="submit" class="demo-action-btn" title="Demoyu ve onay bekleyen eşleşmeleri başlangıç durumuna döndürür">
-                        🔄 Demoyu Sıfırla
-                    </button>
-                </form>
-                <a href="/eslesmeler" class="nav-link-btn">
+                <a href="/eslesmeler" class="btn btn-matches">
                     Eşleşme Onayı
                     {% if ozet.onay_bekleyen_eslesme_sayisi > 0 %}
-                        <span class="nav-badge">{{ ozet.onay_bekleyen_eslesme_sayisi }} Bekleyen</span>
+                        <span class="badge-count">{{ ozet.onay_bekleyen_eslesme_sayisi }} Bekleyen</span>
                     {% else %}
-                        <span style="color: var(--text-muted); font-weight: 400;">(0)</span>
+                        <span style="color:var(--text-muted);font-weight:400;">(0)</span>
                     {% endif %}
                 </a>
             </div>
-        </header>
+        </div>
 
-        <!-- Serdar Bey İçin 3 Adımlık Canlı Test Rehberi -->
-        <div class="guide-banner">
-            <div>
-                <div class="guide-title">👋 Cep-Hane Teknoloji Canlı Demo — 3 Adımda Hızlı Test Rehberi</div>
-                <div class="guide-steps">
-                    <span><strong>1. Adım:</strong> Telegram'da <strong>@Cep-haneFiyatTakipBot</strong> botunu açıp <code>/start</code> yazın.</span>
-                    <span><strong>2. Adım:</strong> Üstteki <strong>"⚡ Rakip İndirimi Simüle Et (-1.260 TL)"</strong> butonuna basın ve cep telefonunuza gelen anlık uyarısını görün.</span>
-                    <span><strong>3. Adım:</strong> Tablodaki bir ürüne tıklayarak <strong>Satıcı Kartları &amp; 14 Günlük Grafiği</strong> inceleyin veya <strong>".xlsx İndir"</strong> ile yeni fiyat listesini alın.</span>
+        <!-- 3. CANLI SİMÜLASYON & KRİZ TESTİ KUMANDA MASASI -->
+        <section class="simulation-command-deck">
+            <div class="deck-top-row">
+                <div class="deck-info">
+                    <span class="deck-pill">
+                        ⚡ CANLI TEST MASASI
+                    </span>
+                    <div>
+                        <div class="deck-heading">Pazaryeri Ani Fiyat Kırma Testi: Apple iPhone 15 128 GB Siyah</div>
+                        <div class="deck-subtitle">Rakip (N11 / TeknoMerkez) fiyatını aniden 58.750 TL'den 57.490 TL'ye (-1.260 TL) indirdiğinde sistemin marjınızı nasıl savunduğunu görün.</div>
+                    </div>
                 </div>
+                <div class="deck-actions">
+                    <form method="post" action="/demo/fiyat-dusur" id="simForm" style="display:inline;">
+                        <button type="submit" class="btn-sim-trigger" id="btnSimulate">
+                            ⚡ Rakip İndirimi Simüle Et (-1.260 TL)
+                        </button>
+                    </form>
+                    <form method="post" action="/demo/sifirla" style="display:inline;">
+                        <button type="submit" class="btn-sim-reset" title="Demoyu başlangıç ayarlarına döndür">
+                            🔄 Demoyu Sıfırla
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="deck-flight-path">
+                <div class="path-step">
+                    <div class="step-num amber">1</div>
+                    <div>
+                        <strong>1. Kriz Senaryosu</strong><br>
+                        <span>Rakip anında 57.490 TL'ye iner</span>
+                    </div>
+                </div>
+                <div class="path-arrow">➔</div>
+                <div class="path-step">
+                    <div class="step-num blue">2</div>
+                    <div>
+                        <strong>2. Akıllı Havale Dip Koruması</strong><br>
+                        <span>58.000 TL dip sınır altına inilmez, fiyat kırılmaz</span>
+                    </div>
+                </div>
+                <div class="path-arrow">➔</div>
+                <div class="path-step">
+                    <div class="step-num green">3</div>
+                    <div>
+                        <strong>3. Anlık Kriz Alarmı</strong><br>
+                        <span>Telegram @Cep-haneFiyatTakipBot'a acil uyarı gider</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. FİNANSAL VE OPERASYONEL KPI KARTLARI -->
+        <section class="summary-grid">
+            <div class="kpi-card kpi-blue">
+                <div class="kpi-header">
+                    <span class="kpi-title">Katalog Kapsamı</span>
+                    <span class="kpi-badge badge-blue">Katalog Tespiti</span>
+                </div>
+                <div class="kpi-value">
+                    {{ ozet.toplam_urun }} <small>/ 210 Model</small>
+                </div>
+                <div class="kpi-footer">
+                    <span>cephaneteknoloji.com'da 210 ürün tespit edildi</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-rose">
+                <div class="kpi-header">
+                    <span class="kpi-title">Rakip Avantajı</span>
+                    <span class="kpi-badge badge-rose">Rakip Ucuz</span>
+                </div>
+                <div class="kpi-value" style="color:var(--rose);">
+                    {{ ozet.rakibin_ucuz_oldugu_urun_sayisi }} <small>Ürün</small>
+                </div>
+                <div class="kpi-footer">
+                    <span><strong>{{ dip_alti_sayisi }}</strong> üründe rakip Havale Dip sınırının altında</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-emerald">
+                <div class="kpi-header">
+                    <span class="kpi-title">Net Kâr Potansiyeli</span>
+                    <span class="kpi-badge badge-emerald">Ekstra Marj Fırsatı</span>
+                </div>
+                <div class="kpi-value" style="color:var(--emerald);">
+                    +{{ toplam_birim_ek_kar|tr_fiyat }} <small>TL / adet</small>
+                </div>
+                <div class="kpi-footer" style="color:var(--emerald);font-weight:600;">
+                    <span>👑 10'ar satışta <strong>+{{ toplam_10lu_ek_kar|tr_fiyat }} TL</strong> net ek kâr</span>
+                </div>
+            </div>
+
+            <div class="kpi-card kpi-indigo">
+                <div class="kpi-header">
+                    <span class="kpi-title">Pazaryeri Motoru</span>
+                    <span class="kpi-badge badge-indigo">Canlı Veri</span>
+                </div>
+                <div class="kpi-value">
+                    3 <small>Pazaryeri</small>
+                </div>
+                <div class="kpi-footer">
+                    <span>PttAVM · Hepsiburada · N11/Pazarama</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. YAPAY ZEKA SATIN ALMA & STRATEJİ DİREKTİFİ -->
+        <section class="ai-briefing-box">
+            <div class="ai-header">
+                <div class="ai-title">
+                    <span>🧠</span>
+                    Yapay Zeka Satın Alma & Fiyat Stratejisi Direktifi
+                </div>
+                <span class="topbar-pill" style="color:#0f172a;background:#e2e8f0;border:none;font-weight:600;">
+                    🤖 @Cep-haneFiyatTakipBot ile Canlı Senkronize
+                </span>
+            </div>
+            <div class="ai-body">
+                <p>
+                    <strong>Günün Özeti:</strong> İzlenen 12 amiral ürünün <strong>9 tanesinde</strong> pazaryeri rakiplerimiz (PttAVM, Hepsiburada, N11) liste fiyatımızın altında satış yapmaktadır. Ancak <strong>'Samsung Galaxy A17'</strong> gibi ürünlerde rakipler dip sınırımızın yakınına indiği için gereksiz fiyat kırmayarak kârlılığımız başarıyla korunmuştur.
+                </p>
+                <div class="ai-grid">
+                    <div class="ai-action-card urgent">
+                        <div class="ai-card-title urgent">
+                            <span>🎯</span>
+                            Acil Fiyatlandırma Aksiyonları (1. Sırayı Al)
+                        </div>
+                        <div class="ai-chips-list">
+                            <div class="ai-chip-row">
+                                <strong>Apple iPhone 15 128 GB</strong>
+                                <span>Önerilen: <strong>58.650,00 TL</strong> (Rakip: 58.750 TL)</span>
+                            </div>
+                            <div class="ai-chip-row">
+                                <strong>POCO X8 Pro 256 GB</strong>
+                                <span>Önerilen: <strong>33.850,00 TL</strong> (Rakip: 33.950 TL)</span>
+                            </div>
+                            <div class="ai-chip-row">
+                                <strong>Samsung Galaxy A36 5G</strong>
+                                <span>Önerilen: <strong>24.850,00 TL</strong> (Rakip: 24.950 TL)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-action-card profit">
+                        <div class="ai-card-title profit">
+                            <span>👑</span>
+                            Marj Artırma Fırsatları (Fiyatı Güvenle Yukarı Çek)
+                        </div>
+                        <div class="ai-chips-list">
+                            <div class="ai-chip-row">
+                                <strong>Samsung Galaxy A26 256 GB</strong>
+                                <span style="color:#047857;"><strong>23.290,00 TL</strong>'ye çek (+390 TL Ek Kâr)</span>
+                            </div>
+                            <div class="ai-chip-row">
+                                <strong>Apple iPad Mini 7 512 GB</strong>
+                                <span style="color:#047857;"><strong>59.000,00 TL</strong>'ye çek (+700 TL Ek Kâr)</span>
+                            </div>
+                            <div class="ai-chip-row">
+                                <strong>Xiaomi Redmi Pad 2</strong>
+                                <span style="color:#047857;"><strong>7.240,00 TL</strong>'ye çek (+140 TL Ek Kâr)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. FİLTRELER VE ARAMA ÇUBUĞU -->
+        <div class="table-toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Model adı, satıcı mağaza veya SKU ara...">
+            </div>
+            <div class="filter-tabs">
+                <button type="button" class="tab-btn active" data-filter="all">
+                    Tümü <span class="tab-count">{{ urunler|length }}</span>
+                </button>
+                <button type="button" class="tab-btn" data-filter="cheaper">
+                    🔴 Rakip Ucuz <span class="tab-count">{{ ozet.rakibin_ucuz_oldugu_urun_sayisi }}</span>
+                </button>
+                <button type="button" class="tab-btn" data-filter="dip">
+                    ⚠️ Dip Sınır Riski <span class="tab-count">{{ dip_alti_sayisi }}</span>
+                </button>
+                <button type="button" class="tab-btn" data-filter="opportunity">
+                    👑 Kâr Fırsatı <span class="tab-count">{{ firsat_sayisi }}</span>
+                </button>
             </div>
         </div>
 
-        <div id="toastBanner" class="toast-banner"></div>
-
-        <!-- Simülasyon Açıklama Kutusu: Neyi Test Eder? -->
-        <section class="simulation-explainer-card">
-            <div class="sim-header">
-                <div class="sim-title">
-                    <span class="sim-badge">⚡ Canlı Test Kılavuzu</span>
-                    <strong>'⚡ Rakip İndirimi Simüle Et' Butonu Nedir &amp; Neyi Test Eder?</strong>
-                </div>
-                <div class="sim-tag">📱 Test Modeli: Apple iPhone 15 128 GB</div>
-            </div>
-            <div class="sim-grid">
-                <div class="sim-col">
-                    <div class="sim-col-label">🎯 1. Canlandırılan Kriz Senaryosu</div>
-                    <p>Pazaryeri rakibimiz <strong>N11 / TeknoMerkez</strong>, amiral gemimiz iPhone 15'te aniden fiyatını <strong>58.750 TL'den 57.490 TL'ye (-1.260 TL)</strong> düşürür ve pazaryerinde 1. sıraya oturur.</p>
-                </div>
-                <div class="sim-col">
-                    <div class="sim-col-label">🛡️ 2. Sistemin Akıllı Kararı (Dip Sınır Zırhı)</div>
-                    <p>Akılsız botlar gibi fiyat kırıp Cep-Hane'yi zarara sokmak yerine; sistemimiz <strong>58.000 TL Havale Dip Sınırınızı</strong> korur. İndirimi reddeder, <strong>⚠️ DİP SINIR ALTI RİSK</strong> uyarısı verir ve Telegram'dan anlık kriz alarmı atar.</p>
-                </div>
-                <div class="sim-col">
-                    <div class="sim-col-label">🔄 3. Nasıl Test Edilir &amp; Geri Alınır?</div>
-                    <p>Üstteki turuncu butona tıklayarak canlı test akışını ve Telegram uyarısını görebilir; inceleme bitince <strong>'Demoyu Sıfırla'</strong> butonuyla sistemi saniyeler içinde ilk orijinal haline döndürebilirsiniz.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 1. Üstte 4 Özet Kutusu -->
-        <section class="summary-grid">
-            <div class="summary-card">
-                <div class="summary-label">Aktif Demo / Toplam Katalog</div>
-                <div class="summary-value">{{ ozet.toplam_urun }} <span style="font-size:1.05rem;color:var(--text-muted);font-weight:600;">/ 210 Ürün</span></div>
-                <div class="summary-sub">cephaneteknoloji.com'da 210 ürün tespit edildi</div>
-            </div>
-            <div class="summary-card card-danger">
-                <div class="summary-label">Rakibin Ucuz Olduğu Ürün</div>
-                <div class="summary-value text-red">{{ ozet.rakibin_ucuz_oldugu_urun_sayisi }}</div>
-                <div class="summary-sub">{{ dip_alti_sayisi }} üründe rakip Havale Dip sınırının altında</div>
-            </div>
-            <div class="summary-card card-success">
-                <div class="summary-label">En Ucuz Biziz (Marj Fırsatı)</div>
-                <div class="summary-value text-green">{{ firsat_sayisi }} <span style="font-size:0.95rem;font-weight:700;">(+{{ toplam_birim_ek_kar|tr_fiyat }} TL/adet)</span></div>
-                <div class="summary-sub" style="color:#15803d;font-weight:600;">💰 10'ar satışta +{{ toplam_10lu_ek_kar|tr_fiyat }} TL ek net kâr potansiyeli</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Son Otomatik Tarama</div>
-                <div class="summary-value timestamp">{{ ozet.son_guncelleme_zamani }}</div>
-                <div class="summary-sub">PttAVM · Hepsiburada · N11/Pazarama</div>
-            </div>
-        </section>
-
-        <!-- 2. Altında Günün LLM Raporu -->
-        <section class="report-box">
-            <div class="report-header">
-                <h2>Satın Alma Müdürlüğü — Günün Yönetici Özeti (Yapay Zeka Raporu)</h2>
-                <span>@Cep-haneFiyatTakipBot ile senkronize</span>
-            </div>
-            <div class="report-content">{{ ozet.son_rapor }}</div>
-        </section>
-
-        <!-- 3. Altında Ürün Tablosu (Arama Kutusu + Hızlı Filtre Sekmeleri ile) -->
-        <section class="table-section">
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="search-input"
-                        placeholder="Model adı, satıcı mağaza veya SKU ara..."
-                        aria-label="Ürün adı veya SKU ara"
-                    >
-                    <div class="filter-tabs" id="filterTabs">
-                        <button type="button" class="filter-tab active" data-filter="all">
-                            Tümü ({{ urunler|length }})
-                        </button>
-                        <button type="button" class="filter-tab" data-filter="cheaper">
-                            🔴 Rakip Bizden Ucuz ({{ ozet.rakibin_ucuz_oldugu_urun_sayisi }})
-                        </button>
-                        <button type="button" class="filter-tab" data-filter="dip">
-                            ⚠️ Dip Sınır Altı ({{ dip_alti_sayisi }})
-                        </button>
-                        <button type="button" class="filter-tab" data-filter="opportunity">
-                            🟢 En Ucuz Biziz / Fırsat ({{ firsat_sayisi }})
-                        </button>
-                    </div>
-                </div>
-                <div class="row-counter" id="rowCounter">
-                    Toplam {{ urunler|length }} ürün gösteriliyor
-                </div>
-            </div>
-
-            <div class="table-wrapper">
-                <table id="productsTable">
+        <!-- 7. ANA REKABET VE FİYATLANDIRMA TABLOSU -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="catalog-table" id="productsTable">
                     <thead>
                         <tr>
-                            <th>Ürün Adı (Detay &amp; 14 Günlük Grafik)</th>
+                            <th>Ürün &amp; Cihaz Kimliği</th>
                             <th>Cep-Hane Fiyatı</th>
-                            <th>PttAVM (En Ucuz Satıcı)</th>
-                            <th>Hepsiburada (En Ucuz Satıcı)</th>
-                            <th>N11 / Pazarama (En Ucuz Satıcı)</th>
+                            <th>PttAVM Satıcı Kartı</th>
+                            <th>Hepsiburada Satıcı Kartı</th>
+                            <th>N11 / Pazarama Satıcı Kartı</th>
                             <th>En Ucuz Rakip &amp; Fark</th>
-                            <th>Durum &amp; Satın Alma Önerisi</th>
+                            <th>Akıllı Karar &amp; Fiyat Önerisi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1050,292 +1493,375 @@
                         {% set is_expensive = (u.durum == "BİZ UCUZUZ") %}
                         {% set is_dip = u.dip_alti %}
                         <tr
-                            class="product-row {% if is_cheaper %}row-red{% elif is_expensive %}row-green{% else %}row-gray{% endif %}"
+                            class="product-row"
                             data-name="{{ u.urun_adi|lower }} {{ u.sku|lower }} {{ u.rakip_a_detay.satici|lower if u.rakip_a_detay else '' }} {{ u.rakip_b_detay.satici|lower if u.rakip_b_detay else '' }} {{ u.rakip_c_detay.satici|lower if u.rakip_c_detay else '' }}"
                             data-cheaper="{{ 'true' if is_cheaper else 'false' }}"
                             data-dip="{{ 'true' if is_dip else 'false' }}"
                             data-opportunity="{{ 'true' if is_expensive else 'false' }}"
                         >
-                            <td>
-                                <a href="/urun/{{ u.id }}" class="product-name">{{ u.urun_adi }}</a>
-                                <span class="product-sku">SKU: {{ u.sku }} · {{ u.kategori_rozeti }} · <span style="color:#2563eb;font-weight:600;">Detay &amp; Grafik →</span></span>
+                            <!-- 1. Ürün & Cihaz Kimliği -->
+                            <td class="cell-product">
+                                <div class="product-meta-wrap">
+                                    <div class="device-avatar" style="background:{{ u.visual.bg_color }};">
+                                        {{ u.visual.svg_icon|safe }}
+                                    </div>
+                                    <div class="product-info-col">
+                                        <div class="product-specs-row">
+                                            <span class="brand-chip {{ u.visual.brand_badge }}">{{ u.visual.brand }}</span>
+                                            {% for spec in u.visual.specs %}
+                                                <span class="spec-pill">{{ spec }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        <a href="/urun/{{ u.id }}" class="product-headline" title="{{ u.urun_adi }}">
+                                            {{ u.visual.short_title }}
+                                        </a>
+                                        <a href="/urun/{{ u.id }}" class="sku-link">
+                                            {{ u.sku }} · 14 Günlük Grafik &amp; Analiz →
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="price-cell my-price">
-                                {{ u.benim_fiyatim|tr_fiyat }} TL
-                                <span class="dip-sub">Havale Dip: {{ u.min_kabul_edilebilir_fiyat|tr_fiyat }} TL</span>
-                            </td>
-                            <td class="price-cell">
-                                {% if u.rakip_a_detay %}
-                                    <span class="seller-price">{{ u.rakip_a_detay.fiyat|tr_fiyat }} TL</span>
-                                    <span class="seller-meta">
-                                        🏪 <strong>{{ u.rakip_a_detay.satici }}</strong>
-                                        <span class="seller-rating">★ {{ u.rakip_a_detay.puan }}</span>
-                                        · <span class="{% if 'Son' in u.rakip_a_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_a_detay.stok_notu }}</span>
-                                    </span>
-                                {% else %}
-                                    <a href="/eslesmeler" style="color:#b45309;font-weight:600;font-size:0.78rem;text-decoration:underline;">⏳ Eşleşme Onayı Bekliyor</a>
-                                {% endif %}
-                            </td>
-                            <td class="price-cell">
-                                {% if u.rakip_b_detay %}
-                                    <span class="seller-price">{{ u.rakip_b_detay.fiyat|tr_fiyat }} TL</span>
-                                    <span class="seller-meta">
-                                        🏪 <strong>{{ u.rakip_b_detay.satici }}</strong>
-                                        <span class="seller-rating">★ {{ u.rakip_b_detay.puan }}</span>
-                                        · <span class="{% if 'Son' in u.rakip_b_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_b_detay.stok_notu }}</span>
-                                    </span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="price-cell">
-                                {% if u.rakip_c_detay %}
-                                    <span class="seller-price">{{ u.rakip_c_detay.fiyat|tr_fiyat }} TL</span>
-                                    <span class="seller-meta">
-                                        🏪 <strong>{{ u.rakip_c_detay.satici }}</strong>
-                                        <span class="seller-rating">★ {{ u.rakip_c_detay.puan }}</span>
-                                        · <span class="{% if not u.rakip_c_detay.stokta %}seller-stock-out{% elif 'Son' in u.rakip_c_detay.stok_notu %}seller-stock-low{% endif %}">{{ u.rakip_c_detay.stok_notu }}</span>
-                                    </span>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="price-cell {% if is_cheaper %}diff-red{% elif is_expensive %}diff-green{% else %}diff-gray{% endif %}">
-                                {% if u.fark is not none %}
-                                    {{ u.fark|tr_fark }} TL ({{ "%+.1f"|format(u.fark_yuzde) }}%)
-                                    {% if u.en_ucuz_rakip_detay %}
-                                        <span class="cheapest-seller-tag">En Ucuz: {{ u.en_ucuz_rakip_detay.kanal }} / {{ u.en_ucuz_rakip_detay.satici }}</span>
+
+                            <!-- 2. Cep-Hane Fiyatı -->
+                            <td class="cell-my-price">
+                                <div class="my-price-card {% if u.cep_hane_is_leader %}is-leader{% endif %}">
+                                    {% if u.cep_hane_is_leader %}
+                                        <div class="leader-crown-tag">👑 1. SIRA BİZDE</div>
                                     {% endif %}
+                                    <div class="my-price-val">{{ u.benim_fiyatim|tr_fiyat }} TL</div>
+                                    <div class="my-price-sub">Havale Dip: {{ u.min_kabul_edilebilir_fiyat|tr_fiyat }} TL</div>
+                                </div>
+                            </td>
+
+                            <!-- 3. PttAVM -->
+                            <td class="cell-marketplace">
+                                {% if u.rakip_a_detay %}
+                                    <div class="market-card {% if u.rakip_a_detay.is_cheapest %}is-winner{% endif %}">
+                                        <div class="market-header">
+                                            <span class="market-tag tag-ptt">PttAVM</span>
+                                            {% if u.rakip_a_detay.is_cheapest %}
+                                                <span class="market-winner-crown">🏆 EN UCUZ</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="market-price">{{ u.rakip_a_detay.fiyat|tr_fiyat }} TL</div>
+                                        <div class="market-store-row">
+                                            <span>🏪 {{ u.rakip_a_detay.satici }}</span>
+                                            <span class="market-rating">★ {{ u.rakip_a_detay.puan }}</span>
+                                        </div>
+                                        <div class="market-stock-chip {% if 'Son' in u.rakip_a_detay.stok_notu %}stock-alert{% endif %}">
+                                            {{ u.rakip_a_detay.stok_notu }}
+                                        </div>
+                                    </div>
                                 {% else %}
-                                    -
+                                    <a href="/eslesmeler" style="color:#b45309;font-weight:600;font-size:0.75rem;text-decoration:underline;">
+                                        ⏳ Eşleşme Bekliyor
+                                    </a>
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if is_dip %}
-                                    <span class="status-badge badge-amber">⚠️ DİP SINIR ALTI RİSK</span>
-                                {% elif is_cheaper %}
-                                    <span class="status-badge badge-red">RAKİP UCUZ</span>
-                                {% elif is_expensive %}
-                                    <span class="status-badge badge-green">👑 EN UCUZ BİZİZ</span>
+
+                            <!-- 4. Hepsiburada -->
+                            <td class="cell-marketplace">
+                                {% if u.rakip_b_detay %}
+                                    <div class="market-card {% if u.rakip_b_detay.is_cheapest %}is-winner{% endif %}">
+                                        <div class="market-header">
+                                            <span class="market-tag tag-hb">Hepsiburada</span>
+                                            {% if u.rakip_b_detay.is_cheapest %}
+                                                <span class="market-winner-crown">🏆 EN UCUZ</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="market-price">{{ u.rakip_b_detay.fiyat|tr_fiyat }} TL</div>
+                                        <div class="market-store-row">
+                                            <span>🏪 {{ u.rakip_b_detay.satici }}</span>
+                                            <span class="market-rating">★ {{ u.rakip_b_detay.puan }}</span>
+                                        </div>
+                                        <div class="market-stock-chip {% if 'Son' in u.rakip_b_detay.stok_notu %}stock-alert{% endif %}">
+                                            {{ u.rakip_b_detay.stok_notu }}
+                                        </div>
+                                    </div>
                                 {% else %}
-                                    <span class="status-badge badge-gray">{{ u.durum }}</span>
+                                    <span style="color:#94a3b8;font-size:0.8rem;">-</span>
                                 {% endif %}
-                                {% if u.oneri_notu %}
-                                    <span class="recommendation-subtext">{{ u.oneri_notu }}</span>
+                            </td>
+
+                            <!-- 5. N11 / Pazarama -->
+                            <td class="cell-marketplace">
+                                {% if u.rakip_c_detay %}
+                                    <div class="market-card {% if u.rakip_c_detay.is_cheapest %}is-winner{% endif %}">
+                                        <div class="market-header">
+                                            <span class="market-tag tag-n11">N11 / Pazarama</span>
+                                            {% if u.rakip_c_detay.is_cheapest %}
+                                                <span class="market-winner-crown">🏆 EN UCUZ</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="market-price">{{ u.rakip_c_detay.fiyat|tr_fiyat }} TL</div>
+                                        <div class="market-store-row">
+                                            <span>🏪 {{ u.rakip_c_detay.satici }}</span>
+                                            <span class="market-rating">★ {{ u.rakip_c_detay.puan }}</span>
+                                        </div>
+                                        <div class="market-stock-chip {% if not u.rakip_c_detay.stokta %}stock-alert{% elif 'Son' in u.rakip_c_detay.stok_notu %}stock-alert{% endif %}">
+                                            {{ u.rakip_c_detay.stok_notu }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span style="color:#94a3b8;font-size:0.8rem;">-</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- 6. En Ucuz Rakip & Fark -->
+                            <td class="cell-diff">
+                                <div class="diff-chip-box">
+                                    {% if u.fark is not none %}
+                                        <div class="diff-pill {% if is_cheaper %}diff-danger{% elif is_expensive %}diff-success{% else %}diff-gray{% endif %}">
+                                            {{ u.fark|tr_fark }} TL ({{ "%+.1f"|format(u.fark_yuzde) }}%)
+                                        </div>
+                                        {% if u.en_ucuz_rakip_detay %}
+                                            <div class="diff-winner-name">
+                                                En Ucuz: <strong>{{ u.en_ucuz_rakip_detay.kanal }}</strong> ({{ u.en_ucuz_rakip_detay.satici }})
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span style="color:#94a3b8;">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- 7. Akıllı Karar & Fiyat Önerisi -->
+                            <td class="cell-action">
+                                {% if is_dip %}
+                                    <div class="action-card-widget risk">
+                                        <div class="action-widget-header">
+                                            <span class="action-widget-badge">⚠️ DİP SINIR KORUMASI</span>
+                                            <span class="action-tag" style="color:#be123c;">Fiyat Kırılmaz</span>
+                                        </div>
+                                        <div class="action-widget-price">{{ u.min_kabul_edilebilir_fiyat|tr_fiyat }} TL</div>
+                                        <div class="action-widget-sub">
+                                            Havale dip sınırı altına inilirse kâr marjı sıfırlanır.
+                                        </div>
+                                    </div>
+                                {% elif is_cheaper %}
+                                    <div class="action-card-widget buybox">
+                                        <div class="action-widget-header">
+                                            <span class="action-widget-badge">🎯 1. SIRAYI AL</span>
+                                            <span class="action-tag">Rakip Altı</span>
+                                        </div>
+                                        <div class="action-widget-price">{{ u.onerilen_fiyat|tr_fiyat }} TL</div>
+                                        <div class="action-widget-sub">
+                                            <span class="action-tag">🛡️ %{{ u.yeni_marj_yuzde }} Güvenli Marj</span>
+                                            <span>Havale dip korunur</span>
+                                        </div>
+                                    </div>
+                                {% elif is_expensive %}
+                                    <div class="action-card-widget profit">
+                                        <div class="action-widget-header">
+                                            <span class="action-widget-badge">👑 MARJ FIRSATI</span>
+                                            <span class="action-tag" style="color:#047857;">Lider Biziz</span>
+                                        </div>
+                                        <div class="action-widget-price">{{ u.onerilen_fiyat|tr_fiyat }} TL</div>
+                                        <div class="action-widget-sub">
+                                            <span class="action-tag">+{{ ((u.onerilen_fiyat or 0) - u.benim_fiyatim)|tr_fiyat }} TL / Adet</span>
+                                            <span>1. sırayı koruyarak marj artır</span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span style="color:#94a3b8;font-size:0.8rem;">Mevcut fiyat korunur</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <div id="emptyState" class="empty-state" {% if not urunler %}style="display: block;"{% endif %}>
-                    {% if urunler %}Arama veya filtre kriterlerine uygun ürün bulunamadı.{% else %}Henüz veri yok{% endif %}
+                <div id="emptyState" style="display:none;padding:2rem;text-align:center;color:#64748b;font-weight:600;">
+                    Arama kriterlerine uygun ürün bulunamadı.
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- 4. Tam Sürüm Kapasitesi ve Elektronik Sektörüne Özel 8 Modül -->
+        <!-- 8. TAM SÜRÜM ELEKTRONİK MODÜLLERİ (Yol Haritası) -->
         <section class="roadmap-section">
             <div class="roadmap-header">
                 <div>
-                    <h2>🚀 Cep-Hane Teknoloji — Tam Sürüm (Canlı Kurulum) Sektörel Modülleri &amp; Terzi İşi Avantajlarımız</h2>
+                    <h2>🚀 Cep-Hane Teknoloji — Tam Sürüm Sektörel Modülleri &amp; Terzi İşi Avantajlarımız</h2>
                     <p>Bu ekran, sistemin çalışma mantığını hemen test edebilmeniz için <strong>cephaneteknoloji.com</strong> kataloğunuzdaki 12 popüler modelle hazırlanmış canlı demo ortamıdır. Tam sürüm kurulumunda elektronik ve cep telefonu sektörüne özel olarak devreye girecek 8 modül:</p>
                 </div>
-                <span class="roadmap-tag">8 Sektörel Modül · Terzi İşi Kurulum</span>
+                <span class="topbar-pill" style="background:#1e3a8a;color:#93c5fd;border:none;font-weight:700;">
+                    8 Sektörel Modül · Canlı Kurulum
+                </span>
             </div>
             <div class="roadmap-grid">
                 <div class="roadmap-card">
-                    <h3>🛡️ 1. "Ölü Fiyat / 1 Stoklu Satıcı" Filtresi</h3>
+                    <span class="roadmap-card-tag">Risk &amp; Marj Koruma</span>
+                    <h3>🛡️ 1. Ölü Fiyat &amp; 1 Stok Filtresi</h3>
                     <p>Elinde sadece 1 adet stok kalan, teşhir ürünü satan veya mağaza puanı <strong>9.2'nin altında</strong> olan satıcıların piyasayı bozan yanıltıcı fiyatlarını otomatik filtreler; gereksiz yere fiyat kırmanızı önler.</p>
                 </div>
                 <div class="roadmap-card">
-                    <h3>🎯 2. Satın Alma "Toptan Alım Fırsatı" Radarı</h3>
-                    <p>Pazaryerinde bir satıcı nakit sıkışıklığı nedeniyle sizin <strong>toptan alış maliyetinizin bile altında</strong> fiyat açarsa, fiyat kırmak yerine <em>"Bu satıcıdan toptan mal çekme fırsatı"</em> olarak Satın Alma Müdürlüğüne alarm verir.</p>
+                    <span class="roadmap-card-tag">Satın Alma İstihbaratı</span>
+                    <h3>📦 2. "Toptan Alım Fırsatı" Radarı</h3>
+                    <p>Pazaryerinde bir satıcı nakit sıkışıklığı nedeniyle sizin toptan alış maliyetinizin bile altında fiyat açarsa, fiyat kırmak yerine "Bu satıcıdan toptan mal çekme fırsatı" olarak Satın Alma Müdürlüğü'ne alarm verir.</p>
                 </div>
                 <div class="roadmap-card">
-                    <h3>🧮 3. Pazaryeri Komisyon &amp; Kargo Net Marj Motoru</h3>
-                    <p>PttAVM, Hepsiburada, N11 ve Trendyol'un kategori komisyon oranları ile kargo baremlerini ayrı ayrı düşerek brüt satış fiyatı değil, <strong>Cep-Hane'ye kalan net tutar</strong> ve Havale dip sınırı üzerinden öneri üretir.</p>
+                    <span class="roadmap-card-tag">Finans &amp; Kâr Hesabı</span>
+                    <h3>📊 3. Komisyon &amp; Kargo Net Marj Motoru</h3>
+                    <p>PttAVM, Hepsiburada, N11 ve Trendyol'un kategori komisyon oranları ile kargo baremlerini ayrı ayrı düşerek brüt satış fiyatı değil, Cep-Hane'ye kalan <strong>net tutar ve Havale dip sınırını</strong> önerir.</p>
                 </div>
                 <div class="roadmap-card">
-                    <h3>🎨 4. Renk, GB ve Garanti Tipi Ayrıştırıcı</h3>
-                    <p>Cep telefonlarında Siyah/Mavi renk fiyat farklarını, <code>128GB / 256GB</code> kapasiteleri ve <strong>Türkiye Garantili vs. İthalatçı Garantili</strong> ayrımlarını yapay zeka ile denetleyerek elma ile elmayı karşılaştırır.</p>
+                    <span class="roadmap-card-tag">Elektronik Eşleştirme</span>
+                    <h3>🔍 4. Renk, GB ve Garanti Ayrıştırıcı</h3>
+                    <p>Cep telefonlarında Siyah/Mavi renk fiyat farklarını, 128GB / 256GB kapasiteleri ve <strong>Türkiye Garantili vs. İthalatçı Garantili</strong> ayrımlarını yapay zeka ile denetleyerek elma ile elmayı karşılaştırır.</p>
                 </div>
                 <div class="roadmap-card">
-                    <h3>📦 5. 210 Ürünün Tamamı &amp; 9 Pazaryeri Takibi</h3>
+                    <span class="roadmap-card-tag">Katalog Kapsamı</span>
+                    <h3>🌐 5. 210 Ürünün Tamamı &amp; 9 Pazaryeri</h3>
                     <p>Sitenizdeki 7 kategoride yer alan <strong>210 ürünün tamamını</strong> (veya özel Excel/ERP listenizi) Akakçe, Cimri, PttAVM, Hepsiburada, N11, Pazarama, Trendyol, Amazon ve MediaMarkt'ta otomatik tarar.</p>
                 </div>
                 <div class="roadmap-card">
+                    <span class="roadmap-card-tag">ERP / Entegratör</span>
                     <h3>🔄 6. PraPazar &amp; ERP Toplu Fiyat Güncelleme</h3>
-                    <p>Sistemin önerdiği ve onayladığınız rekabetçi fiyatları tek tıkla <strong>PraPazar toplu fiyat güncelleme şablonuna</strong> uygun Excel olarak indirir veya doğrudan entegrasyonla pazaryerlerine aktarır.</p>
+                    <p>Sistemin önerdiği ve onayladığınız rekabetçi fiyatları tek tıkla <strong>PraPazar toplu fiyat güncelleme</strong> şablonuna uygun Excel olarak indirir veya doğrudan entegrasyonla pazaryerlerine aktarır.</p>
                 </div>
                 <div class="roadmap-card">
+                    <span class="roadmap-card-tag">Kritik Alarm</span>
                     <h3>⚡ 7. Saatlik "Buybox &amp; Stok" Anlık Alarmı</h3>
-                    <p>Sabah 08:30 brifingine ek olarak, en çok ciro getiren "A Grubu" telefon modellerinde gün içinde bir rakip fiyat kırdığında veya stoğu tükendiğinde <strong>dakikasında Telegram'dan</strong> anlık bildirim gönderir.</p>
+                    <p>Sabah 08:30 brifingine ek olarak, en çok ciro getiren "A Grubu" telefon modellerinde gün içinde bir rakip fiyat kırdığında veya stoğu tükendiğinde dakikasında Telegram'dan anlık bildirim gönderir.</p>
                 </div>
                 <div class="roadmap-card">
-                    <h3>📊 8. Rakip Mağaza Davranış &amp; Trend Analizi</h3>
-                    <p><em>"Bittibitti, GpnTeknoloji veya TeknoMerkez hangi gün ve saatlerde fiyat kırıyor? Hangi markada kim daha agresif?"</em> sorularını yanıtlayan haftalık yönetici strateji raporu üretir.</p>
+                    <span class="roadmap-card-tag">Stratejik İstihbarat</span>
+                    <h3>📈 8. Rakip Mağaza Davranış &amp; Trend Analizi</h3>
+                    <p>"Bittibitti, GpnTeknoloji veya TeknoMerkez hangi gün ve saatlerde fiyat kırıyor? Hangi markada kim daha agresif?" sorularını yanıtlayan haftalık yönetici strateji raporu üretir.</p>
                 </div>
             </div>
         </section>
 
     </div>
 
-
-    <!-- Canlı İşlem Progress Modal -->
-    <div id="progressOverlay" class="progress-overlay">
-        <div class="progress-modal">
-            <div class="progress-modal-title" id="progressTitle">⚡ İşlem Başlatıldı...</div>
-            <div class="progress-modal-sub" id="progressSub">Lütfen bekleyin, işlem tamamlandığında sayfa otomatik güncellenecektir.</div>
-            <div class="progress-track">
-                <div class="progress-fill" id="progressFill"></div>
+    <!-- 9. CANLI AKSİYON MODALI (Progress Modal) -->
+    <div id="progressModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-spinner-ring"></div>
+            <div class="modal-title" id="modalTitle">Pazaryeri Fiyat Kırma Simülasyonu Başlatıldı</div>
+            <div class="modal-desc" id="modalDesc">Apple iPhone 15 128 GB için anlık fiyat taraması ve Havale Dip Sınırı denetimi yapılıyor...</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressFill"></div>
             </div>
-            <ul class="progress-steps-list" id="progressStepsList"></ul>
+            <div class="modal-steps-list">
+                <div class="modal-step-item" id="mStep1">
+                    <span class="step-icon">📡</span>
+                    <span>1. Adım: N11 / TeknoMerkez güncel kampanya fiyatı çekiliyor (57.490 TL)</span>
+                </div>
+                <div class="modal-step-item" id="mStep2">
+                    <span class="step-icon">🛡️</span>
+                    <span>2. Adım: Havale Dip Sınırı &amp; Marj Kural Motoru denetleniyor (Dip Sınır: 58.000 TL)</span>
+                </div>
+                <div class="modal-step-item" id="mStep3">
+                    <span class="step-icon">🧠</span>
+                    <span>3. Adım: Yapay Zeka Satın Alma &amp; Fiyatlandırma Tavsiyesi güncelleniyor</span>
+                </div>
+                <div class="modal-step-item" id="mStep4">
+                    <span class="step-icon">📲</span>
+                    <span>4. Adım: Telegram Yönetici Alarmı (@Cep-haneFiyatTakipBot) iletiliyor</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        (function () {
-            const searchInput = document.getElementById("searchInput");
-            const filterButtons = Array.from(document.querySelectorAll(".filter-tab"));
-            const rows = Array.from(document.querySelectorAll(".product-row"));
-            const rowCounter = document.getElementById("rowCounter");
-            const emptyState = document.getElementById("emptyState");
-            const toastBanner = document.getElementById("toastBanner");
-            let currentFilter = "all";
+        // Tab Arama ve Filtreleme
+        const searchInput = document.getElementById('searchInput');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const rows = document.querySelectorAll('.product-row');
+        const emptyState = document.getElementById('emptyState');
 
-            const params = new URLSearchParams(window.location.search);
-            const bildirim = params.get("bildirim");
-            if (bildirim && toastBanner) {
-                toastBanner.style.display = "block";
-                if (bildirim === "telegram_gonderildi") {
-                    toastBanner.textContent = "✓ Günlük yönetici özeti ve satıcı bazlı kritik fiyat uyarıları @Cep-haneFiyatTakipBot üzerinden Telegram'a gönderildi!";
-                } else if (bildirim === "indirim_simule_edildi") {
-                    toastBanner.textContent = "⚡ Canlı Senaryo: Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (★9.4) fiyatı 58.750 TL'den 57.490 TL'ye (-1.260 TL) çekildi! Rakip Havale Dip sınırınızın (58.000 TL) altına indiği için 'DİP SINIR ALTI RİSK' koruması devreye girdi ve Telegram'a acil uyarı gönderildi!";
-                } else if (bildirim === "demo_sifirlandi") {
-                    toastBanner.textContent = "🔄 Demo veritabanı, pazaryeri satıcı fiyatları ve 3 onay bekleyen eşleşme başlangıç durumuna sıfırlandı.";
+        let currentFilter = 'all';
+
+        function filterProducts() {
+            const query = (searchInput.value || '').toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowText = row.getAttribute('data-name') || '';
+                const isCheaper = row.getAttribute('data-cheaper') === 'true';
+                const isDip = row.getAttribute('data-dip') === 'true';
+                const isOpportunity = row.getAttribute('data-opportunity') === 'true';
+
+                let matchesFilter = true;
+                if (currentFilter === 'cheaper') matchesFilter = isCheaper;
+                else if (currentFilter === 'dip') matchesFilter = isDip;
+                else if (currentFilter === 'opportunity') matchesFilter = isOpportunity;
+
+                let matchesSearch = true;
+                if (query.length > 0) {
+                    matchesSearch = rowText.includes(query);
                 }
-            }
 
-            function applyFilters() {
-                const query = searchInput.value.trim().toLowerCase();
-                let visibleCount = 0;
-
-                rows.forEach(function (row) {
-                    const nameAndSku = row.getAttribute("data-name") || "";
-                    const isCheaper = row.getAttribute("data-cheaper") === "true";
-                    const isDip = row.getAttribute("data-dip") === "true";
-                    const isOpp = row.getAttribute("data-opportunity") === "true";
-
-                    const matchesSearch = !query || nameAndSku.indexOf(query) !== -1;
-                    let matchesTab = true;
-                    if (currentFilter === "cheaper") matchesTab = isCheaper;
-                    else if (currentFilter === "dip") matchesTab = isDip;
-                    else if (currentFilter === "opportunity") matchesTab = isOpp;
-
-                    if (matchesSearch && matchesTab) {
-                        row.style.display = "";
-                        visibleCount += 1;
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-
-                rowCounter.textContent = "Toplam " + visibleCount + " ürün gösteriliyor";
-                emptyState.style.display = visibleCount === 0 ? "block" : "none";
-            }
-
-            filterButtons.forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                    filterButtons.forEach(function (b) { b.classList.remove("active"); });
-                    btn.classList.add("active");
-                    currentFilter = btn.getAttribute("data-filter") || "all";
-                    applyFilters();
-                });
+                if (matchesFilter && matchesSearch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
             });
 
+            if (emptyState) {
+                emptyState.style.display = (visibleCount === 0) ? 'block' : 'none';
+            }
+        }
 
-            // Canlı Demo Formları İçin Progress Bar Gösterimi
-            const overlay = document.getElementById("progressOverlay");
-            const pTitle = document.getElementById("progressTitle");
-            const pSub = document.getElementById("progressSub");
-            const pFill = document.getElementById("progressFill");
-            const pList = document.getElementById("progressStepsList");
+        if (searchInput) {
+            searchInput.addEventListener('input', filterProducts);
+        }
 
-            const scenarios = {
-                "/demo/fiyat-dusur": {
-                    title: "⚡ Canlı Rakip İndirimi Simüle Ediliyor...",
-                    sub: "Apple iPhone 15 128 GB modelinde N11 / TeknoMerkez (58.750 TL ➔ 57.490 TL) Havale dip sınır altı senaryosu işleniyor:",
-                    steps: [
-                        "🔍 1/4 — N11 / TeknoMerkez mağazasındaki yeni fiyat veritabanına kaydediliyor...",
-                        "🧮 2/4 — Havale Dip Sınırı (58.000 TL) ve marj kuralları hesaplanıyor...",
-                        "🤖 3/4 — Yapay Zeka (LLM) satın alma yönetici özeti yeniden yazılıyor...",
-                        "📲 4/4 — @Cep-haneFiyatTakipBot ile cep telefonunuza acil uyarı gönderiliyor..."
-                    ]
-                },
-                "/demo/telegram-gonder": {
-                    title: "📲 Telegram Sabah Brifingi Gönderiliyor...",
-                    sub: "Güncel pazaryeri ve satıcı raporu @Cep-haneFiyatTakipBot üzerinden iletiliyor:",
-                    steps: [
-                        "📊 1/3 — 12 ürün ve 36 pazaryeri satıcı fiyatı derleniyor...",
-                        "🚨 2/3 — En kritik 3 satıcı uyarısı ve Havale dip sınırları formatlanıyor...",
-                        "📲 3/3 — @Cep-haneFiyatTakipBot üzerinden telefonunuza mesaj iletiliyor..."
-                    ]
-                },
-                "/demo/sifirla": {
-                    title: "🔄 Demo Başlangıç Durumuna Sıfırlanıyor...",
-                    sub: "Tüm pazaryeri fiyatları ve onay bekleyen eşleşmeler ilk haline döndürülüyor:",
-                    steps: [
-                        "📦 1/3 — 12 Cep-Hane ürünü ve pazaryeri satıcı fiyatları sıfırlanıyor...",
-                        "🔍 2/3 — Rapidfuzz ürün eşleştirme motoru (33 onaylı, 3 bekleyen) çalıştırılıyor...",
-                        "📈 3/3 — 14 günlük fiyat geçmişi ve yönetici özeti hazırlanıyor..."
-                    ]
-                }
-            };
-
-            document.querySelectorAll("form[action^='/demo/']").forEach(function (formEl) {
-                formEl.addEventListener("submit", function () {
-                    const action = formEl.getAttribute("action") || "";
-                    const cfg = scenarios[action];
-                    if (!cfg || !overlay) return;
-
-                    const btn = formEl.querySelector("button[type='submit']");
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.style.opacity = "0.7";
-                        btn.textContent = "⏳ İşleniyor...";
-                    }
-
-                    pTitle.textContent = cfg.title;
-                    pSub.textContent = cfg.sub;
-                    pList.innerHTML = "";
-                    cfg.steps.forEach(function (st, idx) {
-                        const li = document.createElement("li");
-                        li.className = "progress-step-item" + (idx === 0 ? " active" : "");
-                        li.textContent = st;
-                        pList.appendChild(li);
-                    });
-
-                    overlay.style.display = "flex";
-                    pFill.style.width = "22%";
-
-                    let stepIdx = 0;
-                    const items = Array.from(pList.querySelectorAll(".progress-step-item"));
-                    setInterval(function () {
-                        if (stepIdx < items.length - 1) {
-                            items[stepIdx].classList.remove("active");
-                            items[stepIdx].classList.add("done");
-                            stepIdx += 1;
-                            items[stepIdx].classList.add("active");
-                            const pct = Math.min(95, Math.round(((stepIdx + 1) / items.length) * 92));
-                            pFill.style.width = pct + "%";
-                        }
-                    }, 650);
-                });
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-filter') || 'all';
+                filterProducts();
             });
+        });
 
-            searchInput.addEventListener("input", applyFilters);
-        })();
+        // Simülasyon Modal & Progress Tetikleyici
+        const simForm = document.getElementById('simForm');
+        const progressModal = document.getElementById('progressModal');
+        const progressFill = document.getElementById('progressFill');
+        const mStep1 = document.getElementById('mStep1');
+        const mStep2 = document.getElementById('mStep2');
+        const mStep3 = document.getElementById('mStep3');
+        const mStep4 = document.getElementById('mStep4');
+
+        if (simForm && progressModal) {
+            simForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                progressModal.classList.add('active');
+
+                // Adım 1
+                progressFill.style.width = '25%';
+                mStep1.classList.add('active');
+
+                setTimeout(() => {
+                    mStep1.classList.remove('active');
+                    mStep1.classList.add('done');
+                    mStep2.classList.add('active');
+                    progressFill.style.width = '55%';
+                }, 600);
+
+                setTimeout(() => {
+                    mStep2.classList.remove('active');
+                    mStep2.classList.add('done');
+                    mStep3.classList.add('active');
+                    progressFill.style.width = '80%';
+                }, 1200);
+
+                setTimeout(() => {
+                    mStep3.classList.remove('active');
+                    mStep3.classList.add('done');
+                    mStep4.classList.add('active');
+                    progressFill.style.width = '100%';
+                }, 1800);
+
+                setTimeout(() => {
+                    simForm.submit();
+                }, 2400);
+            });
+        }
     </script>
 </body>
 </html>
